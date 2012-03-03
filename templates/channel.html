@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="grid_7">
+	<a href="/team/{{ team.key.name }}/channels">&larr; Voltar aos canais</a>
+	<h1>{{ channel.title }}</h1>
+	
+	<div>
+		{{ channel.items.count }} ite{{ channel.items.count|pluralize:'m,ns' }} | 
+		{% if channel.last_sync %}
+		Sincronizado em {{ channel.last_sync|date:"d/m/Y H:i:s" }} 
+		{% else %}
+		<span title="Esse canal será sincronizado automáticamente em breve">Sincronização agendada</span>
+		{% endif %}
+	</div>
+
+	<div class="result-list">
+	{% for item in items.object_list %}
+	<div class="list-item">
+		<div>
+		<a class="list-item-title" href='/{{item.key }}'>{{ item.title }}</a> ({{ item.date|date:"d/m/Y H:i:s" }})
+		<div class="no-important">{{ item.link }}</div>
+		</div>
+		<div>
+			{{ item.description }}
+		</div>
+		<div>
+			{% if item.categories.count > 0 %}
+				{% for tag in item.categories %}
+				<a href="/team/{{ team.key.name }}/categories/{{ tag.category.key }}"><div class="category-tag"></a>
+					<div class="tag-color" style="background-color:#{{ tag.category.color }};">&nbsp;</div>
+					<span>{{ tag.category.name }}</span>
+				</div>
+				{% endfor %}
+			{% else %}
+				<a href="/team/{{ team.key.name }}"><div class="category-tag">
+					<div class="tag-color" style="background-color:#A40000;">&nbsp;</div>
+					<span>Sem categoria</span>
+				</div></a>
+			{% endif %}
+			<a href="{{ item.link }}">Ver na Web</a>
+		</div>
+	</div>
+	{% empty %}
+	<div>Este canal ainda não possui items para exibir.</div>
+	{% endfor %}
+	</div>
+
+	{% with items as pages %}
+	{% include 'pagination.html' %}
+	{% endwith %}
+</div>
+<div class="grid_5 sidepanel"><div class="margin">
+	<h2>Atualizar este canal</h2>
+	<form method="POST">
+	{% include 'form-minimal.html' %}
+	<div class="buttons-area">
+		<button type="submit">Atualizar</button> ou <a href="?do=delete" onclick="return confirm('Tem certeza que deseja remover esse canal?');">Excluir este canal</a>
+	</div>
+	</form>
+</div></div>
+{% endblock %}

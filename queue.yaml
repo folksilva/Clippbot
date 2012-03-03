@@ -1,0 +1,11 @@
+queue:
+- name: default
+  rate: 1/s
+- name: mail
+  rate: 2000/d
+- name: sync
+  rate: 25/s
+  bucket_size: 50
+- name: categorize
+  rate: 40/s
+  bucket_size: 50

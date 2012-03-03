@@ -1,0 +1,19 @@
+{% csrf_token %}
+<div class="form">
+	<div class="form-fields">
+	{% for field in form %}
+		<div>
+		<label for="{{ field.auto_id }}">{{ field.label }}{% if field.field.required %}<span class="required">*</span>{% endif %}:</label>
+		{{ field }}
+		</div>
+		<div>
+		<span class="help_text">{{ field.help_text|safe }}</span>
+		{{ field.errors|safe }}
+		</div>
+	{% endfor %}
+	</div>
+	
+	<div class="form-errors">
+	{{ form.non_field_errors|safe }}
+	</div>
+</div>

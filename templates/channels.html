@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="grid_12">
+<a href="/team/{{ team.key.name }}">&larr; Voltar à equipe</a>
+<h1>Canais RSS da equipe {{ team.name }}</h1>
+
+<div class="grid_8 alpha omega">
+	<form method="post">
+		Cole abaixo o endereço do canal RSS e clique em adicionar para criar um novo canal:
+		<input name="feed" id="feed" type="text">
+		<button type="submit">Adicionar</button>
+	</form>
+</div>
+<div class="tall">&nbsp;</div>
+<div class="result-list">
+	{% for channel in channels.object_list %}
+	<div class="list-item">
+		<div>
+		<a class="list-item-title" href='/team/{{ team.key.name }}/channels/{{ channel.key }}'>{{ channel.title }}</a>
+		({{ channel.items.count }} ite{{ channel.items.count|pluralize:'m,ns' }})
+		<div class="no-important">{{ channel.feed }}</div>
+		</div>
+		<div>
+			{{ channel.description }}
+		</div>
+		<div>
+			Atualizar a cada {{ channel.frequence }} minutos. 
+			<span title="Esse canal será sincronizado automáticamente em breve">Sincronização agendada para {{ channel.next_sync|date:"d/m/Y H:i:s" }}.</span>
+			{% if channel.last_sync %}
+			Sincronizado em {{ channel.last_sync|date:"d/m/Y H:i:s" }}.
+			{% endif %}
+		</div>
+		<div>
+			<a href="{{ channel.link }}">Ver na Web</a> | 
+			<a href="/team/{{ team.key.name }}/channels/{{ channel.key }}?do=delete" onclick="return confirm('Tem certeza que deseja remover esse canal?');">Excluir</a>
+		</div>
+	</div>
+	{% empty %}
+	<div>A sua equipe ainda não possui canais RSS.</div>
+	{% endfor %}
+	</div>
+
+	{% with channels as pages %}
+	{% include 'pagination.html' %}
+	{% endwith %}
+</div>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="grid_7">
+	<a href="/team/{{ team.key.name }}/categories">&larr; Voltar às categorias</a>
+	<h1>
+		<div class="tag-color" style="background-color:#{{ category.color }};">&nbsp;</div>
+		Contatos da categoria {{ category.name }}
+	</h1>
+
+	<div class="result-list">
+		{% for contact in contacts.object_list %}
+		<div class="list-item">
+			<div>
+			<div class="list-item-title">{{ contact.name }}</div> 
+			<div class="no-important"></div>
+			</div>
+			<div>
+				<strong>E-mail:</strong> <a href="mailto:{{ contact.email }}">{{ contact.email }}</a>. <strong>Telefone:</strong> {{ contact.phone|default_if_none:"Nenhum" }}. <strong>Enviar e-mails:</strong> {{ contact.send_automatic|yesno:"Sim,Não" }}
+			</div>
+			<div><a href="?edit={{ contact.key }}">Editar</a> | <a href="?delete={{ contact.key }}" onclick="return confirm('Tem certeza que deseja remover esse contato?');">Excluir</a>
+			</div>
+		</div>
+		{% empty %}
+		<div>Esta categoria não possui contatos.</div>
+		{% endfor %}
+	</div>
+
+	{% with contacts as pages %}
+	{% include 'pagination.html' %}
+	{% endwith %}
+
+</div>
+<div class="grid_5 sidepanel"><div class="margin">
+	<h2>
+		{% if action == 'edit' %}
+		Editar o contato
+		{% else %}
+		Criar um contato
+		{% endif %}
+	</h2>
+	<form method="post">
+		{% include 'form-minimal.html' %}
+		<div class="buttons-area">
+			{% if action == 'edit' %}
+			<button type="submit">Salvar</button> ou <a href="/team/{{ team.key.name }}/categories/{{ category.key }}">Cancelar</a>
+			{% else %}
+			<button type="submit">Criar</button>
+			{% endif %}
+		</div>
+	</form>
+</div></div>
+{% endblock %}

@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% if action == "edit" %}
+<div class="grid_12">
+	<form method="post">
+	<h1>Editar a equipe</h1>
+	{% include "form.html" %}
+	<button type='submit'>Atualizar</button> ou <a href="/team/{{ team.key.name }}">Cancelar</a>
+	</form>
+
+</div>
+{% else %}
+<div class="grid_8">
+	{% if action == "home" %}
+	{% if profile.teams.count > 1 %}
+	<a href="/">&larr; Minhas equipes</a> | 
+	{% endif %}
+	<a href="/teams">&uarr; Ver todas as equipes</a>
+	{% else %}
+	<a href="/team/{{ team.key.name }}">&larr; Voltar à equipe</a>
+	{% endif %}
+	<h1>{{ team.name }}</h1>
+	{{ team.description }}<br>
+	Criado em {{ team.created|date:"d/m/Y" }}, atualizado em {{ team.updated|date:"d/m/Y" }} e formado por {{ team.members.count }} membro{{ team.members.count|pluralize}}
+	{% if action == "join" %}
+		<h2>Digite o código secreto</h2>
+		<p>Para fazer parte dessa equipe você precisa saber o seu código secreto. Apenas o membros da equipe podem te informar o código:</p>
+		<form method="post">
+			{% if error %}<div class="error">{{ error }}</div>{% endif %}
+			<input name="subscription_code" id="id_subscription_code" type="text" class="code_input" />
+			<button type='submit'>Verificar...</button> ou <a href="/teams">Cancelar</a>
+		</form>
+</div>
+	{% else %}{% if action == "exit" %}
+		<h2>Deixar essa equipe?</h2>
+		<p>Você tem certeza que deseja sair desta equipe? Para voltar você precisará do código secreto.</p>
+		<form method="post">
+			<button type='submit'>Confirmar...</button> ou <a href="/team/{{ team.key.name }}">Cancelar</a>
+		</form>
+</div>
+	{% else %}{% if action == "members" %}
+	<h2>Membros da equipe</h2>
+	<p>Veja abaixo todos os membros da equipe</p>
+
+	<div class="result-list">
+	{% for member in members.object_list %}
+	<div class="list-item">
+		<div>
+		<a class="list-item-title" href='/profile/{{ member.profile.key }}'>{{ member.profile.name }}</a>
+		</div>
+		<div>
+		Membro {{ member.is_admin|yesno:"Administrador,Comum" }}. 
+		Desde {{ member.created|date:"d/m/Y" }} 
+		</div>
+		{% if membership.is_admin %}
+		<div>
+			{% if member.is_admin %}
+				<a href="?change={{ member.key }}&level=c">Tornar comum</a>
+			{% else %}
+				<a href="?change={{ member.key }}&level=a">Tornar administrador</a>
+			{% endif %} | 
+			<a href="?kick={{ member.key }}" onclick="return confirm('Realmente deseja retirar {{ member.profile.name }} da equipe?')">Retirar da equipe</a>
+		</div>
+		{% endif %}
+		
+	</div>
+	{% endfor %}
+	</div>
+
+	{% with members as pages %}
+	{% include 'pagination.html' %}
+	{% endwith %}
+	{% else %}
+	<h2>Notícias não classificadas</h2>
+	<div class="result-list">
+	{% for item in items.object_list %}
+	<div class="list-item">
+		<div>
+		<a class="list-item-title" href='/{{ item.key }}'>{{ item.title }}</a> {{ item.pub_date|date:"d/m/Y" }}
+		</div>
+		<div>
+		{{ item.description }} 
+		</div>
+	</div>
+	{% empty %}
+	Uhu! Nenhuma notícia sem classificação automática.
+	{% endfor %}
+	</div>
+
+	{% with items as pages %}
+	{% include 'pagination.html' %}
+	{% endwith %}
+</div>
+<div class="grid_4 sidepanel">
+	<strong>Opções da equipe</strong>
+	<ul class="help_topics">
+			{% if membership.is_admin %}<li><a href="/team/{{ team.key.name }}/edit">Editar</a></li>{% endif %}
+			<li><a href="/team/{{ team.key.name }}/channels">Canais RSS</a></li>
+			<li><a href="/team/{{ team.key.name }}/categories">Categorias</a></li>
+			<li><a href="/team/{{ team.key.name }}/members">Membros</a></li>
+			<br>
+			<li><a href="/team/{{ team.key.name }}/exit">Sair da equipe</a></li>
+		</ul>
+</div>
+	{% endif %}{% endif %}{% endif %}
+{% endif %}
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="grid_8">
+{% block help_content %}
+<h1>Ajuda do Clippbot</h1>
+<p>Selecione um tópico ao lado para obter ajuda.</p>
+{% endblock %}
+</div>
+<div class="grid_4 help_nav">
+	<div class="margin">
+		<strong>Tópicos de ajuda</strong>
+		<ul class="help_topics">
+			<li><a href="/help">Início</a></li>
+			<li><a href="/help/im">Bate-papo</a></li>
+		</ul>
+	</div>
+</div>
+{% endblock %}

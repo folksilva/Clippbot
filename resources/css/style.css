@@ -1,0 +1,205 @@
+/*
+ * Estilos do InfoFighters.com
+ */
+
+ /* Importações de folhas de estilos complementares */
+ /*@import 'reset.css';*/
+ @import 'fonts.css';
+
+
+/* Estilos genéricos */
+body {
+	background: #EEEEEE url('/res/img/bg.png');
+	font: 14px/1.5 'FuturaLtBTLight','Helvetica Neue', Arial, 'Liberation Sans', FreeSans, sans-serif;
+	color: #333333;
+	text-shadow: 0 1px 1px white;
+}
+
+hr {
+	border: none;
+	border-top: solid 1px #333333;
+	border-bottom: solid 1px white;
+}
+
+h1, h2 {
+	font-family: 'FuturaMdBTBold';
+}
+
+input:not([type="button"]), 
+input:not([type="checkbox"]), 
+input:not([type="hidden"]), 
+input:not([type="image"]), 
+input:not([type="radio"]), 
+input:not([type="reset"]), 
+textarea {
+	font: 14px/1.5 'FuturaLtBTLight','Helvetica Neue', Arial, 'Liberation Sans', FreeSans, sans-serif;
+	color: #333333;
+	display: block;
+	width: 100%;
+	padding: 0;
+	margin: 0;
+	border: solid 1px;
+	border-top-color: #333333;
+	border-left-color: #666666;
+	border-bottom-color: #FFFFFF;
+	border-right-color: #F3F3F3;
+	background-color: #FAFAFA;
+	outline: none;
+	transition-duration:1s;
+	-o-transition-duration:1s;
+	-moz-transition-duration:1s;
+	-webkit-transition-duration:1s;
+}
+
+input:not([type="button"]):focus, 
+input:not([type="checkbox"]):focus, 
+input:not([type="hidden"]):focus, 
+input:not([type="image"]):focus, 
+input:not([type="radio"]):focus, 
+input:not([type="reset"]):focus, 
+textarea:focus {
+	color: #000000;
+	background-color: #FFFFFF;
+}
+input[type="checkbox"], input[type="radio"] {
+	display: inline;
+}
+
+button[type="submit"], input[type="submit"]  {
+	background-color: #D40000;
+	border: none;
+	font: 18px 'FuturaMdBTBold';
+	color: white;
+	text-shadow: 0 1px 1px #640000;
+	box-shadow: 1px 1px 0 #640000;
+	-o-box-shadow: 1px 1px 0 #640000;
+	-moz-box-shadow: 1px 1px 0 #640000;
+	-webkit-box-shadow: 1px 1px 0 #640000;
+}
+button[type="submit"]:hover, input[type="submit"]:hover {
+	background-color: #E40000;
+}
+
+input[name="q"] {
+	border: solid 1px #D40000;
+	border-right: none;
+	font: 16px 'FuturaLtBTLight' bold;
+	box-shadow: 1px 1px 0 #640000;
+	-o-box-shadow: 1px 1px 0 #640000;
+	-moz-box-shadow: 1px 1px 0 #640000;
+	-webkit-box-shadow: 1px 1px 0 #640000;
+	margin: 0;
+	padding: 0px;
+	height: 23px !important;
+	line-height: 23px;
+	width: 90%;
+	overflow: hidden;
+	display: inline-block;
+}
+button.search_submit {
+	width: 100%;
+	font: 16px 'FuturaLtBTLight' bold;
+	margin: 0;
+	margin-left: -1px;
+	height: 23px !important;
+	width: 10%;
+	overflow: hidden;
+	display: inline-block;
+	vertical-align: bottom;
+}
+
+a {
+	color: #D40000;
+}
+a:hover {
+	color: #E40000;
+}
+table {padding: 0;border:0;}
+tr {padding: 0;border:0;}
+tr:nth-child(odd){background-color: #EFEFEF;}
+th, td {
+	margin: 0;
+	padding: 3px;
+	border: solid 1px #666666;
+}
+th {background-color: #BBBBBB;}
+
+/* Classes genéricas */
+.errorlist {
+	font-size: 12px;
+}
+.error { color:red; }
+.help_text { color: #666666;}
+.no-important { color: #666666;font-size:11px; }
+.wide input {
+	width: 100%;
+}
+.logo {
+	max-width: 100%;
+	transition-duration:1s;
+	-o-transition-duration:1s;
+	-moz-transition-duration:1s;
+	-webkit-transition-duration:5s;
+}
+.strongest {font: 16px 'FuturaMdBTBold';}
+.required, .beta {color:#D40000;vertical-align: super;}
+.help_nav, .sidepanel {
+	background-color: #EFEFEF;
+	border-radius: 6px;
+}
+.help_nav .margin, .sidepanel .margin { margin:4px;}
+.help_topics {padding:0;margin:0;}
+.help_topics li {display: list-item;list-style: none;}
+
+.list-item {margin: 10px 0;}
+.list-item-title {font: 18px 'FuturaMdBTBold';}
+.pagination {
+	background-color: #EFEFEF;
+	border-radius: 6px;
+	padding: 4px;
+	display: inline-block;
+}
+
+.tall {
+	margin: 10px;
+	clear: both;
+}
+
+.category-tag {
+	display: inline-block;
+	vertical-align: middle;
+	font-size: 12px;
+	margin: 1px 3px;
+	padding: 3px;
+	line-height: 12px;
+}
+.category-tag span {
+	display: inline-block;
+	vertical-align: middle;
+}
+.category-tag span:hover {
+	text-decoration: underline;
+}
+.tag-color {
+	display: inline-block;
+	vertical-align: middle;
+	margin-right: 3px;
+	width: 10px;
+	height: 10px;
+	border: solid 1px #333333;
+	border-radius: 6px;
+	box-shadow: 0 1px 1px white;
+}
+
+input.code_input {
+	font-family: monospace;
+	font-size: 22px;
+}
+
+/* IDs genéricos */
+#footer {
+	text-align: center;
+}
+#search {
+	text-align: right;
+}

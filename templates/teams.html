@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="grid_7">
+	<h1>Selecione sua equipe</h1>
+	<p>Se você ainda não faz parte de nenhuma equipe selecione uma abaixo ou cria a sua.</p>
+	<div class="result-list">
+	{% for team in teams.object_list %}
+	<div class="list-item">
+		<div>
+		<a class="list-item-title" href='/team/{{ team.key.name }}'>{{ team.name }}</a>
+		({{team.members.count}} membro{{team.members.count|pluralize}})
+		</div>
+		<div>{{ team.description }}</div>
+		<div>
+		{% if team.allow_subscriptions %}
+			<form method="get" action="/team/{{ team.key.name }}/join">
+			<button type='submit'>Entrar nessa equipe...</button>
+			</form>
+		{% else %}
+			<img src='/res/img/lock.png'/> Este grupo está fechado para novas inscrições.
+		{% endif %}
+		</div>
+	</div>
+	{% endfor %}
+	</div>
+	{% with teams as pages %}
+	{% include 'pagination.html' %}
+	{% endwith %}
+</div>
+<div class="grid_5 sidepanel"><div class="margin">
+<h2>Criar uma equipe</h2>
+<p>Preencha o formulário abaixo para criar a sua própria equipe. Você será automaticamente definido como o administrador.</p>
+<form method="post">
+	{% include 'form-minimal.html' %}
+	<div class="buttons-area">
+		<button type="submit">Criar</button>
+	</div>
+</form>
+</div></div>
+
+<script type="text/javascript">
+$("#desc_chars").html("(" + $("#id_description").val().length + "/200)");
+$("#id_name").keyup(function(){
+	var name = $("#id_name").val().toLowerCase();
+	name = name.replace(/ /g,"_");
+	name = name.replace(/[ãâáàä]/gi,"a");
+	name = name.replace(/[ẽêéèë]/gi,"e");
+	name = name.replace(/[ĩîíìï]/gi,"i");
+	name = name.replace(/[õôóòö]/gi,"o");
+	name = name.replace(/[ũûúùü]/gi,"u");
+	name = name.replace(/[ç]/gi,"c");
+	name = name.replace(/[~^`*$%@!]/gi,"");
+	$("#id_key_name").val(name);
+});
+$("#id_description").keyup(function(){
+	$("#id_description").val($("#id_description").val().substr(0,200));
+	$("#desc_chars").html("(" + $("#id_description").val().length + "/200)");
+});
+</script>
+{% endblock %}

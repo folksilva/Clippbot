@@ -1,0 +1,19 @@
+{% if pages.paginator.num_pages > 1 %}
+<div class="pagination">
+	{% if pages.has_previous %}
+	<a href="?page={{ pages.previous_page_number }}">&larr; Anterior</a>
+	{% endif %}
+
+	{% for page in pages.paginator.page_range %}
+		{% if page = pages.number %}
+			<strong>{{page}}</strong>
+		{% else %}
+			<a href="?page={{ page }}">{{ page }}</a>
+		{% endif %}
+	{% endfor %}
+	
+	{% if pages.has_next %}
+	<a href="?page={{ pages.next_page_number }}">Próximo &rarr;</a>
+	{% endif %}
+</div>
+{% endif %}

@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="grid_12">
+	<h1>Resultados da pesquisa para <i>&ldquo;{{query}}&rdquo;</i></h1>
+	<div class="result-list">
+	{% for item in results.object_list %}
+	<div class="list-item">
+		<div>
+		<a class="list-item-title" href='/{{item.key }}'>{{ item.title }}</a> ({{ item.date|date:"d/m/Y H:i:s" }})
+		<div class="no-important">{{ item.link }}</div>
+		</div>
+		<div>
+			{{ item.description }}
+		</div>
+		<div>
+			{% if item.categories.count > 0 %}
+				{% for tag in item.categories %}
+				<a href="/team/{{ team.key.name }}/categories/{{ tag.category.key }}"><div class="category-tag"></a>
+					<div class="tag-color" style="background-color:#{{ tag.category.color }};">&nbsp;</div>
+					<span>{{ tag.category.name }}</span>
+				</div>
+				{% endfor %}
+			{% else %}
+				<a href="/team/{{ team.key.name }}"><div class="category-tag">
+					<div class="tag-color" style="background-color:#A40000;">&nbsp;</div>
+					<span>Sem categoria</span>
+				</div></a>
+			{% endif %}
+			<a href="{{ item.link }}">Ver na Web</a>
+		</div>
+	</div>
+	{% empty %}
+	<div>Nenhum resultado para exibir.</div>
+	{% endfor %}
+	</div>
+
+	{% with results as pages %}
+	{% include 'pagination.html' %}
+	{% endwith %}
+</div>
+{% endblock %}

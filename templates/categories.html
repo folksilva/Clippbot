@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="grid_7">
+	<a href="/team/{{ team.key.name }}">&larr; Voltar à equipe</a>
+	<h1>Categorias da equipe {{ team.name }}</h1>
+
+	<div class="result-list">
+		{% for category in categories.object_list %}
+		<div class="list-item">
+			<div>
+			<div class="tag-color" style="background-color:#{{ category.color }};">&nbsp;</div>
+			<a class="list-item-title" href='/team/{{ team.key.name }}/categories/{{ category.key.name }}'>{{ category.name }}</a> 
+			({{ category.contacts.count }} contato{{ category.contacts.count|pluralize }})
+			<div class="no-important">{{ category.feed }}</div>
+			</div>
+			<div>
+				Esta categoria possui {{ category.items.count }} ite{{ category.items.count|pluralize:'m,ns' }}
+			</div>
+			<div><a href="?edit={{ category.key.name }}">Editar</a> | <a href="?delete={{ category.key.name }}" onclick="return confirm('Tem certeza que deseja remover essa categoria?');">Excluir</a>
+			</div>
+		</div>
+		{% empty %}
+		<div>A sua equipe ainda não possui categorias.</div>
+		{% endfor %}
+	</div>
+
+		{% with categories as pages %}
+		{% include 'pagination.html' %}
+		{% endwith %}
+</div>
+<div class="grid_5 sidepanel"><div class="margin">
+	<h2>
+		{% if action == 'edit' %}
+		Editar a categoria
+		{% else %}
+		Criar uma categoria
+		{% endif %}
+	</h2>
+	<form method="post">
+		{% include 'form-minimal.html' %}
+		<div class="buttons-area">
+			{% if action == 'edit' %}
+			<button type="submit">Salvar</button> ou <a href="/team/{{ team.key.name }}/categories">Cancelar</a>
+			{% else %}
+			<button type="submit">Criar</button>
+			{% endif %}
+		</div>
+	</form>
+</div></div>
+<script type="text/javascript">
+$("#id_color").ColorPicker({
+	onSubmit: function(hsb, hex, rgb, el) {
+		$(el).val(hex);
+		$(el).ColorPickerHide();
+	},
+	onChange: function(hsb, hex, rgb) {
+		$("#id_color").val(hex);
+	},
+	onBeforeShow: function () {
+		$(this).ColorPickerSetColor(this.value);
+	}
+})
+.bind('keyup', function(){
+	$(this).ColorPickerSetColor(this.value);
+});
+</script>
+{% endblock %}

@@ -1,0 +1,51 @@
+application: clippbot
+version: 1
+runtime: python
+api_version: 1
+
+inbound_services:
+- mail
+
+handlers:
+- url: /res
+  static_dir: resources
+  
+- url: /favicon\.ico
+  static_files: favicon.ico
+  upload: favicon\.ico
+
+- url: /_ah/cron/sync
+  script: cron_sync.py
+  login: admin
+
+- url: /_ah/cron/report
+  script: cron_report.py
+  login: admin
+
+- url: /_ah/queue/mail
+  script: queue_mail.py
+  login: admin
+
+- url: /_ah/queue/sync
+  script: queue_sync.py
+  login: admin
+
+- url: /_ah/queue/categorize
+  script: queue_categorize.py
+  login: admin
+
+- url: /_ah/mail/category\.(.*)@.*clippbot\.appspotmail\.com
+  script: email_category.py
+  login: admin
+
+- url: /_ah/mail/comment\.(.*)@.*clippbot\.appspotmail\.com
+  script: email_comment.py
+  login: admin
+
+- url: /_ah/mail/suggestion\.(.*)@.*clippbot\.appspotmail\.com
+  script: email_suggestion.py
+  login: admin
+
+- url: .*
+  script: main.py
+

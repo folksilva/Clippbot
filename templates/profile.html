@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="grid_12">
+	<h1>{{ p.name }}</h1>
+	{% if form %}
+	<form method="POST">
+	{% include 'form.html' %}
+	<div class="buttons-area">
+		<button type="submit">Atualizar</button> ou <a href="?do=delete" onclick="return confirm('Tem certeza que deseja excluir o seu perfil?');">Excluir perfil</a>
+	</div>
+	</form>
+	{% else %}
+	<div>Membro de {{ p.teams.count }} equipe{{ p.teams.count|pluralize }} | <a href="mailto:{{ p.email }}">Enviar um e-mail</a></div>
+	{% endif %}
+</div>
+{% endblock %}

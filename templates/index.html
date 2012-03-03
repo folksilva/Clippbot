@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="grid_12">
+{% if not user %}
+	<h1>Bem vindo!</h1>
+	<p>Você ainda não está logado. Por favor, entre com a sua conta do Google clicando no botão abaixo.</p>
+	<button type="submit" onclick="window.location='{{ sign_in }}';">Acessar...</button>
+{% else %}
+
+	{% if form %}
+	<h1>Bem vindo!</h1>
+	<p>Este é o seu primeiro acesso, informe alguns dados sobre você para continuarmos:</p>
+	<form action="" method="POST">
+	{% include 'form.html' %}
+	<div class="buttons-area">
+		<button type="submit">Continuar</button> ou 
+		<a href="{{ sign_out }}">Cancelar</a>
+	</div>
+	</form>
+	{% endif %}
+
+	{% if memberships %}
+	<h1>Bem vindo!</h1>
+	<p>Com qual equipe deseja trabalhar?</p>
+	<div class="result-list">
+	{% for membership in memberships.object_list %}
+	<div class="list-item">
+		<div>
+		<a class="list-item-title" href='/team/{{ membership.team.key.name }}'>{{ membership.team.name }}</a>
+		({{membership.team.members.count}} membro{{membership.team.members.count|pluralize}})
+		</div>
+		<div>{{ membership.team.description }}</div>
+		<div>
+			<form method="get" action="/team/{{ membership.team.key.name }}">
+			<button type='submit'>Selecionar essa equipe...</button>
+			</form>
+		</div>
+	</div>
+	{% endfor %}
+	</div>
+	
+	{% with memberships as pages %}
+	{% include 'pagination.html' %}
+	{% endwith %}
+	
+	<p>Você também pode <a href="/teams">ver todas as equipes</a>.</p>
+	{% endif %}
+
+{% endif %}
+</div>
+{% endblock %}

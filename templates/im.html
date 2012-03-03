@@ -1,0 +1,22 @@
+{% extends 'help.html' %}
+{% block help_content %}
+<h1>Bate-papo</h1>
+<h2>Como bater papo com o Clippbot?</h2>
+<p>Para conseguir enviar e receber mensagens para o Clippbot você precisa adicionar o usuário <strong>clippbot@appspot.com</strong> na sua lista de contatos.</p>
+<h2>Como sei meu endereço XMPP?</h2>
+<p>O Clippbot é capaz de enviar e receber mensagens através do serviço XMPP. Existem muitos outros serviços compatíveis e provavelmente você já possui um. Veja a tabela abaixo com os serviços mais populares:</p>
+<table>
+	<tr>
+		<th>Serviço</th>
+		<th>Endereço XMPP</th>
+	</tr>
+	<tr><td>Google Talk</td><td><i>usuário</i>@gmail.com</td></tr>
+	<tr><td>Facebook Chat</td><td><i>usuário</i>@chat.facebook.com</td></tr>
+	<tr><td>MSN</td><td><i>usuário</i>@messenger.live.com</td></tr>
+	<tr><td>Yahoo!</td><td><i>usuário</i>@messenger.yahoo.com</td></tr>
+	<tr><td>Jabber</td><td><i>usuário</i>@jabber.org</td></tr>
+</table>
+<h2>O que fazer quando o Clippbot me pergunta a categoria de uma notícia?</h2>
+<p>Quando o Clippbot encontra uma notícia e não é capaz de categorizá-la automaticamente, ele entrará em contato com você pedindo ajuda. Neste caso, basta responder informando as categorias da notícia separadas por vírgula.</p>
+<p>Se não souber as categorias cadastradas, envie a mensagem "<strong>liste as categorias</strong>" que o Clippbot te responderá com todas as categorias cadastradas na sua equipe. Se você faz parte de mais de uma equipe, o Clippbot enviará várias mensagens, uma para cada equipe. Para filtrar, envie "<strong>liste as categorias da equipe <i>nome_da_equipe</i></strong>".</p>
+{% endblock %}

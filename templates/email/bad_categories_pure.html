@@ -1,0 +1,11 @@
+{% extends './base_pure.html' %}
+{% block content %}A sua equipe não possui categorias cadastradas
+
+Para que o Clippbot faça a análise é preciso criar as categorias de notícias.
+
+Por favor, acesse http://clippbot.appspot.com/team/{{ item.source_channel.team.key.name }}/categories e crie as categorias que achar necessárias.
+
+Depois você poderá classificar a notícia acessando http://clippbot.appspot.com/{{ item.key.name }}/edit.
+
+{% endblock %}
+{% block footer %}{% endblock %}
