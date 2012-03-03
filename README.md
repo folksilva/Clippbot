@@ -13,7 +13,7 @@ O código fonte do Clippbot está licenciado sob a [CC-GNU GPL 2.0](http://creat
 English
 -------
 
-The **Clippbot** is a system that automates the capture, classification and distribution of news from RSS feeds. It uses an artificial intelligence algorithm to analyze the news and them to relevant contacts.
+The **Clippbot** is a system that automates the capture, classification and distribution of news from RSS feeds. It uses an artificial intelligence algorithm to analyze the news and send them to relevant contacts.
 
 The ideal assistant for a team of communication.
 
