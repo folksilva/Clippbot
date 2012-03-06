@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="grid_12">
+	<h1>Questões</h1>
+	<p>Envie as suas dúvidas, sugestões e reclamações. Sua opinião deixará o Clippbot cada vez melhor</p>
+	<form action="javascript:send()">
+		<label>
+			Título da questão
+			<input type="text" id="title">
+		</label>
+		<label>
+			Descrição da questão
+			<textarea id="body"></textarea>
+		</label>
+		<button type="submit">Enviar</button> <span id="status" style="margin-left:20px;"></span>
+	</form>
+</div>
+<script type="text/javascript">
+function send(){
+	//e.preventDefault();
+	$("#status").html("Enviando...")
+	$.ajax({
+		type:"POST",
+		url:'https://api.github.com/repos/folksilva/Clippbot/issues?access_token=24207e8178d4ea52662bb44a8fd72a234edc9429&token_type=bearer',
+		data:'{"title":"'+$("#title").val()+'","body":"'+$("#body").val()+'","assignee":"folksilva"}',
+		success:function(){
+			$("#status").html("A sua questão foi enviada com sucesso!")
+			$("#title").val("")
+			$("#body").val("")
+		},
+		statusCode: {
+			201: function(){
+				$("#status").html("A sua questão foi enviada com sucesso!")
+				$("#title").val("")
+				$("#body").val("")
+			}
+		},
+		contentType:'application/vnd.github.v3.full+json',
+		mimeType:'application/vnd.github.v3.full+json',
+		dataType:'json'
+	});
+};
+</script>
+{% endblock %}

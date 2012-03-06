@@ -1,19 +1,21 @@
+<div class="pagination-container">
 {% if pages.paginator.num_pages > 1 %}
 <div class="pagination">
 	{% if pages.has_previous %}
-	<a href="?page={{ pages.previous_page_number }}">&larr; Anterior</a>
+	<a href="?page={{ pages.previous_page_number }}">&larr; Anterior</a>&nbsp;
 	{% endif %}
 
 	{% for page in pages.paginator.page_range %}
 		{% if page = pages.number %}
-			<strong>{{page}}</strong>
+			&nbsp;<strong>{{page}}</strong>&nbsp;
 		{% else %}
-			<a href="?page={{ page }}">{{ page }}</a>
+			&nbsp;<a href="?page={{ page }}">{{ page }}</a>&nbsp;
 		{% endif %}
 	{% endfor %}
 	
 	{% if pages.has_next %}
-	<a href="?page={{ pages.next_page_number }}">Próximo &rarr;</a>
+	&nbsp;<a href="?page={{ pages.next_page_number }}">Próximo &rarr;</a>
 	{% endif %}
 </div>
 {% endif %}
+</div>

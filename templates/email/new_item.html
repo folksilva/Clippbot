@@ -1,8 +1,12 @@
 {% extends './base.html' %}
 
 {% block content %}
-<h1></h1>
-<p></p>
+<h1>{{ item.title }}</h1>
+<p>{{ item.description }}</p>
+<p>Leia a notícia completa em: {{ item.link }}</p>
+
+<p>Você recebeu essa mensagem através do Clippbot, responda essa mensagem para enviar o seu comentario sobre essa notícia.<br>
+Leia os comentários em <a href='http://clippbot.appspot.com/{{ item.key.name }}'>http://clippbot.appspot.com/{{ item.key.name }}</a></p>
 {% endblock %}
 
 {% block footer %}

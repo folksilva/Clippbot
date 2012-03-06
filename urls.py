@@ -43,6 +43,8 @@
 |......../help/<topic>												|views.help				|YES	|NO		|100%		|
 |-------------------------------------------------------------------|-----------------------|-------|-------|-----------|
 |..../search 														|views.search 			|YES	|NO		|0%			| DESATIVADO POR ENQUANTO
+|-------------------------------------------------------------------|-----------------------|-------|-------|-----------|
+|..../issue															|views.issue 			|YES	|NO		|100%		|
 -------------------------------------------------------------------------------------------------------------------------
 """
 
@@ -67,6 +69,7 @@ urlpatterns = patterns(
 	(r'^profile/(?P<profile_key>[a-zA-Z0-9_.-]+)$','views.profile'),
 	(r'^help$','views.help'),
 	(r'^help/(?P<topic>[a-zA-Z0-9_.-]+)$','views.help'),
-	(r'^(?P<item_key>[a-zA-Z0-9_.-]+)$','views.item'),
-	(r'^(?P<item_key>[a-zA-Z0-9_.-]+)/edit$','views.item_edit'),
+	(r'^issue$','views.issue'),
+	(r'^(?P<item_key>[\S]+)/edit$','views.item_edit'),
+	(r'^(?P<item_key>[\S]+)$','views.item'),
 )

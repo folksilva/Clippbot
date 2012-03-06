@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="grid_12">
+	<h1>{{ item.title }}</h1>
+	<p>{{ item.description }}</p>
+	<p>{{ item.author }}, {{ item.date|date:"d/m/Y H:i" }}</p>
+	<div> 
+		{{ is_archived|yesno:"Arquivado | ," }}
+		<a href="{{ item.link }}">Ver na Web</a>
+	</div>
+	<h2>Editar as categorias desse item</h2>
+	{% if is_archived %}
+		Depois de arquivado um item não pode mais ser editado.
+	{% else %}
+		<form method="post">
+			<input type="hidden" name="never" value="empty">
+		{% for category in categories %}
+		<div class="tag-color" style="display:block;border-color: #{{ category.color }};"><label>
+			<input type="checkbox" name="categories" value="{{ category.key_name }}" {{ category.selected|yesno:"checked=checked," }}/> 
+			<span>{{ category.name }}. {{ category.suggestion|yesno:"<span style='color:blue;font-size:12px;'>Sugerido pelo Clippbot</span>,"|safe }}</span>
+		</label></div>
+		{% endfor %}
+		<br>
+		<button type="submit">Salvar</button> ou <a href="/{{ item.key.name }}">Cancelar</a>
+		</form>
+	{% endif %}
+</div>
+{% endblock %}

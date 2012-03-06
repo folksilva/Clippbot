@@ -1,4 +1,8 @@
 {% extends './base_pure.html' %}
-{% block content %}
+{% block content %}Novo membro na sua equipe
+
+{{ member.profile.name }} acabou de entrar na sua equipe.
+
+Caso você não tenha fornecido o código de acesso da sua equipe para essa pessoa, acesse http://clippbot.appspot.com/team/{{ member.team.key.name }}/members?kick={{ member.key }} para removê-la e depois altere o código de acesso. Os membros já cadastrados não serão afetados.
 {% endblock %}
 {% block footer %}{% endblock %}

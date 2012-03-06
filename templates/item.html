@@ -2,5 +2,59 @@
 
 {% block content %}
 <div class="grid_12">
+	<h1>{{ item.title }}</h1>
+	<!-- {{ item.key }} -->
+	<div>{% if item.categories.count > 0 %}
+			{% for tag in item.categories %}
+			<a href="/team/{{ team.key.name }}/categories/{{ tag.category.key }}"><div class="category-tag"></a>
+				<div class="tag-color" style="border-color:#{{ tag.category.color }};">
+				<span>{{ tag.category.name }}</span>
+				</div>
+			</div>
+			{% endfor %}
+		{% else %}
+			<a href="#"><div class="category-tag">
+				<div class="tag-color">
+				<span>Sem categoria</span>
+				</div>
+			</div></a>
+		{% endif %}</div>
+	<p>{{ item.description }}</p>
+	<p>{{ item.author }}, {{ item.date|date:"d/m/Y H:i" }} via <a href="{{ item.source_channel.link }}">{{ item.source_channel.title }}</a>.</p>
+	<div> 
+		{{ is_archived|yesno:"Arquivado | ," }}
+		<a href="{{ item.link }}">Ver na Web</a>
+		{% if profile %}
+			 | <a href="/{{ item.key.name }}/edit">Editar</a>
+		{% endif %}
+	</div>
+	<hr>
 </div>
+<div class="clear"></div>
+<div class="grid_8">
+	<h2>Observações</h2>
+	{% for observation in item.observations %}
+	<div class="list-item">
+		<div class="no-important">Em {{ observation.date|date:"d/m/Y H:i" }} por 
+			{% if observation.contact %}
+				{{ observation.contact.name }}
+			{% else %}
+				{% if observation.member %}
+					{{ observation.member.profile.name }}
+				{% endif %}
+			{% endif %}
+		</div>
+		<div>{{ observation.content }}</div>
+	</div>
+	{% endfor %}
+</div>
+{% if profile %}
+<div class="grid_4 sidepanel"><div class="margin">
+	<strong>Adicione a sua observação</strong>
+	<form method="post">
+		<textarea name="observation"></textarea>
+		<button type="submit">Adicionar</button>
+	</form>
+</div></div>
+{% endif %}
 {% endblock %}

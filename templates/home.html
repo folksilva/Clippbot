@@ -77,7 +77,7 @@
 	{% for item in items.object_list %}
 	<div class="list-item">
 		<div>
-		<a class="list-item-title" href='/{{ item.key }}'>{{ item.title }}</a> {{ item.pub_date|date:"d/m/Y" }}
+		<a class="list-item-title" href='/{{ item.key.name }}'>{{ item.title }}</a> | <strong>{{ item.source_channel.title }}</strong> {{ item.date|date:"d/m/Y" }}
 		</div>
 		<div>
 		{{ item.description }} 

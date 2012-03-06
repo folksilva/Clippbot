@@ -51,6 +51,25 @@ indexes:
 
 - kind: Item
   properties:
+  - name: categories.count
+  - name: date
+    direction: desc
+
+- kind: Item
+  properties:
+  - name: categories.count()
+  - name: date
+    direction: desc
+
+- kind: Item
+  properties:
+  - name: classified
+  - name: is_archived
+  - name: date
+    direction: desc
+
+- kind: Item
+  properties:
   - name: title
   - name: date
 

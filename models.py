@@ -160,6 +160,8 @@ class Item(db.Model):
 	source_channel = db.ReferenceProperty(reference_class=Channel,required=True,collection_name="items")
 	# O item está arquivado?
 	is_archived = db.BooleanProperty(default=False)
+	# O item foi classificado?
+	classified = db.BooleanProperty(default=False)
 
 class ItemInCategory(db.Model):
 	"""
@@ -170,7 +172,7 @@ class ItemInCategory(db.Model):
 	# Categoria
 	category = db.ReferenceProperty(reference_class=Category,required=True,collection_name="items")
 	# Essa categoria é uma sugestão?
-	is_sugestion = db.BooleanProperty(default=False)
+	is_suggestion = db.BooleanProperty(default=False)
 
 class Contact(db.Model):
 	"""
@@ -192,3 +194,16 @@ class Contact(db.Model):
 	creator = db.UserProperty(auto_current_user_add=True)
 	# Data da modificação do contato
 	updated = db.DateTimeProperty(auto_now=True)
+
+class ItemObservation(db.Model):
+    """Observação do item"""
+    # Item que recebeu a observação
+    item = db.ReferenceProperty(reference_class=Item,required=True,collection_name="observations")
+    # Contato que criou a observação
+    contact = db.ReferenceProperty(reference_class=Contact,collection_name="observations")
+    # Membro que criou a observação
+    member = db.ReferenceProperty(reference_class=Membership,collection_name="observations")
+    # Conteúdo da observação
+    content = db.TextProperty(required=True)
+    # Data da observação
+    date = db.DateTimeProperty(auto_now_add=True)

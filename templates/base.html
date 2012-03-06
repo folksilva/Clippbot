@@ -8,7 +8,7 @@
 		<meta name="author" content="Luiz Fernando da Silva <folksilva@gmail.com>" />
 		<meta name="viewport" content="width=device-width, user-scalable=no" />
 		
-		<title>{% block title %}{% if title %}{{ title }}{% else %}Clippbot{% endif %}{% endblock %}</title>
+		<title>{% block title %}{% if title %}{{ title }} - {% endif %}Clippbot{% endblock %}</title>
 
 		<!-- Estilos do site -->
 		<link rel="stylesheet" type="text/css" href="/res/css/style.css">
@@ -73,7 +73,7 @@
 					</a> | <a href="{{ sign_out }}">Sair</a>
 				{% endif %}
 				<div><label class="strongest">Clippbot</label><label class="beta">beta</label> &copy; 2012</div>
-				<div>Contate o <a href="mailto:folksilva@gmail.com?subject=Clippbot">desenvolvedor</a> | Obtenha <a href="/help">ajuda</a></div>
+				<div>Contate o <a href="mailto:folksilva@gmail.com?subject=Clippbot">desenvolvedor</a> | Obtenha <a href="/help">ajuda</a> | <a href="/issue">Envie</a> sua opinião</div>
 			</div>
 		</div>
 		<script type="text/javascript">

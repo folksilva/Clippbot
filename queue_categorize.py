@@ -31,7 +31,7 @@ class CategorizeWorker(webapp.RequestHandler):
 			return 1.0
 
 	def tf_idf(self,term,doc,corpus):
-		return tf(term,doc) * idf(term, corpus)
+		return self.tf(term,doc) * self.idf(term, corpus)
 
 	# Funções do webapp
 
@@ -55,9 +55,9 @@ class CategorizeWorker(webapp.RequestHandler):
 			logging.warning("O item %s não possui dados suficientes para analisar" % key)
 			for name, email in getTeamEmails(team):
 				taskparams = {
-					'sender': 'category.%s' % key
+					'sender': 'category.%s' % key,
 					'to':'%s <%s>' % (name,email),
-					'subject':'O item não pode ser classificado',
+					'subject':u'O item não pode ser classificado',
 					'body':getTemplate('bad_item_pure',{'item':item}),
 					'html':getTemplate('bad_item',{'item':item})
 				}
@@ -69,7 +69,7 @@ class CategorizeWorker(webapp.RequestHandler):
 			for name, email in getTeamEmails(team):
 				taskparams = {
 					'to':'%s <%s>' % (name,email),
-					'subject':'O item não pode ser classificado',
+					'subject':u'O item não pode ser classificado',
 					'body':getTemplate('no_team_pure',{'item':item}),
 					'html':getTemplate('no_team',{'item':item})
 				}
@@ -81,38 +81,41 @@ class CategorizeWorker(webapp.RequestHandler):
 
 		# Construir os corpus 
 		for category in team.categories:
-			if category.count(1) == 0:
-				logging.warning("A categoria %s foi ignorada por não conter dados suficientes para análise do item %s" % (category.name,key))
+			if category.items.count(11) < 10:
+				logging.info("A categoria %s foi ignorada por não conter dados suficientes para análise do item %s" % (category.name,key))
 				continue
 
 			titles = ""
 			descriptions = ""
+			space[category.key().name()] = {}
 			space[category.key().name()]['title'] = []
 			space[category.key().name()]['description'] = []
-			for item in category.items:
-				space[category.key().name()]['title'].append(remove_stopwords(item.title))
-				space[category.key().name()]['description'].append(remove_stopwords(item.description))
+			for item_c in category.items:
+				space[category.key().name()]['title'].append(remove_stopwords(item_c.item.title))
+				space[category.key().name()]['description'].append(remove_stopwords(item_c.item.description))
 		
 		# Calcular o TF-IDF do item atual
 		scores = {}
-		for category, corpus in space:
+		for category in space:
 			scores[category] = 0
+			corpus = space[category]
 			
 			# Pontuação dos títulos
 			for title_term in title_terms:
-				for doc in sorted(corpus.title)
-					scores[category] += tf_idf(title_term,doc,corpus.title)*2
+				for doc in sorted(corpus['title']):
+					scores[category] += self.tf_idf(title_term,doc,corpus['title'])*2
 
 			# Pontuação das descrições
 			for description_term in description_terms:
-				for doc in sorted(corpus.description)
-					scores[category] += tf_idf(description_term,doc,corpus.description)
+				for doc in sorted(corpus['description']):
+					scores[category] += self.tf_idf(description_term,doc,corpus['description'])
 
+		logging.info(scores)
 		# Analisar os dados obtidos
 		total_score = sum([scores[k] for k in scores])
 		avg_score = total_score / len(scores)
-		# Categorias com 75% (ou mais) de probabilidade de estar correto
-		auto_categories = [category for category in scores if scores[category] >= (avg_score + (avg_score/2))]
+		# Categorias com maior probabilidade de estar correto
+		auto_categories = [category for category in scores if scores[category] >= (avg_score + (avg_score/len(scores)))]
 		# Categorias com mais de 50% (e menos de 75%) de probabilidade de estar correto
 		suggestion_categories = [category for category in scores if scores[category] > avg_score and scores[category] < (avg_score + (avg_score/2))]
 
@@ -121,9 +124,9 @@ class CategorizeWorker(webapp.RequestHandler):
 			logging.warning("O item %s não se enquadra em nenhuma categoria" % key)
 			for name, email in getTeamEmails(team):
 				taskparams = {
-					'sender': 'category.%s' % key
+					'sender': 'category.%s' % key,
 					'to':'%s <%s>' % (name,email),
-					'subject':'O item não pode ser classificado',
+					'subject':u'O item não pode ser classificado',
 					'body':getTemplate('lost_item_pure',{'item':item}),
 					'html':getTemplate('lost_item',{'item':item})
 				}
@@ -132,15 +135,18 @@ class CategorizeWorker(webapp.RequestHandler):
 
 		if len(auto_categories) > 0:
 			# Enfileirar os e-mails para os contatos da categoria definida automaticamente
+			item.classified = True
+			item.put()
+			logging.info(item)
 			for category in auto_categories:
 				c = Category.get_by_key_name(category)
-				ic = ItemInCategory(item=item,category=c,is_sugestion=False)
+				ic = ItemInCategory(item=item,category=c,is_suggestion=False)
 				ic.put()
-				for contact in c.contacts.filter("send_automatic =",True)
+				for contact in c.contacts.filter("send_automatic =",True):
 					taskparams = {
-						'sender': 'comment.%s' % key
+						'sender': 'comment.%s' % key,
 						'to':"%s <%s>" % (contact.name,contact.email),
-						'subject':'Nova notícia: %s' % item.title,
+						'subject':u'Nova notícia: %s' % item.title,
 						'body':getTemplate('new_item_pure',{'item':item}),
 						'html':getTemplate('new_item',{'item':item})
 					}
@@ -152,13 +158,13 @@ class CategorizeWorker(webapp.RequestHandler):
 			for category in suggestion_categories:
 				c = Category.get_by_key_name(category)
 				suggestions.append(c)
-				ic = ItemInCategory(item=item,category=c,is_sugestion=True)
+				ic = ItemInCategory(item=item,category=c,is_suggestion=True)
 				ic.put()
 			for name, email in getTeamEmails(team):
 				taskparams = {
-					'sender': 'suggestion.%s' % key
+					'sender': 'suggestion.%s' % key,
 					'to':'%s <%s>' % (name,email),
-					'subject':'O item possui sugestões de classificação',
+					'subject':u'O item possui sugestões de classificação',
 					'body':getTemplate('suggestion_pure',{'item':item,'suggestions':suggestions}),
 					'html':getTemplate('suggestion',{'item':item,'suggestions':suggestions})
 				}

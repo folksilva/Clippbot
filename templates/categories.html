@@ -8,11 +8,9 @@
 	<div class="result-list">
 		{% for category in categories.object_list %}
 		<div class="list-item">
-			<div>
-			<div class="tag-color" style="background-color:#{{ category.color }};">&nbsp;</div>
+			<div class="tag-color" style="border-color:#{{ category.color }};">
 			<a class="list-item-title" href='/team/{{ team.key.name }}/categories/{{ category.key.name }}'>{{ category.name }}</a> 
 			({{ category.contacts.count }} contato{{ category.contacts.count|pluralize }})
-			<div class="no-important">{{ category.feed }}</div>
 			</div>
 			<div>
 				Esta categoria possui {{ category.items.count }} ite{{ category.items.count|pluralize:'m,ns' }}

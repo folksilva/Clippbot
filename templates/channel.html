@@ -18,7 +18,7 @@
 	{% for item in items.object_list %}
 	<div class="list-item">
 		<div>
-		<a class="list-item-title" href='/{{item.key }}'>{{ item.title }}</a> ({{ item.date|date:"d/m/Y H:i:s" }})
+		<a class="list-item-title" href='/{{item.key.name }}'>{{ item.title }}</a> ({{ item.date|date:"d/m/Y H:i:s" }})
 		<div class="no-important">{{ item.link }}</div>
 		</div>
 		<div>
@@ -27,15 +27,16 @@
 		<div>
 			{% if item.categories.count > 0 %}
 				{% for tag in item.categories %}
-				<a href="/team/{{ team.key.name }}/categories/{{ tag.category.key }}"><div class="category-tag"></a>
-					<div class="tag-color" style="background-color:#{{ tag.category.color }};">&nbsp;</div>
+				<a href="/team/{{ team.key.name }}/categories/{{ tag.category.key }}">
+				<div class="tag-color" style="border-color:#{{ tag.category.color }};">
 					<span>{{ tag.category.name }}</span>
-				</div>
+				</div></a>
 				{% endfor %}
 			{% else %}
 				<a href="/team/{{ team.key.name }}"><div class="category-tag">
-					<div class="tag-color" style="background-color:#A40000;">&nbsp;</div>
+					<div class="tag-color" style="border-color:#A40000;">
 					<span>Sem categoria</span>
+					</div>
 				</div></a>
 			{% endif %}
 			<a href="{{ item.link }}">Ver na Web</a>

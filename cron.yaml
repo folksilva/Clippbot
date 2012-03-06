@@ -3,6 +3,6 @@ cron:
   url: /_ah/cron/sync
   schedule: every 5 minutes
 
-- description: Enviar relatorios
-  url: /_ah/cron/report
-  schedule: every friday 18:00
+#- description: Enviar relatorios
+#  url: /_ah/cron/report
+#  schedule: every friday 18:00

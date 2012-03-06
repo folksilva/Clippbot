@@ -1,0 +1,29 @@
+A FAZER
+
+ITEM					|STATUS
+------------------------|-------
+views.index				|100%
+views.item 				|100%
+views.teams 			|100%
+views.team_home 		|100%
+views.team_join 		|100%
+views.team_edit 		|100%
+views.team_exit 		|100%
+views.team_members 		|100%
+views.team_channels 	|100%
+views.channel 			|100%
+views.team_categories 	|100%
+views.category 			|100%
+views.my_profile 		|100%
+views.profile 			|100%
+views.help 				|100%
+views.search 			|0% - Não implementado (Próxima versão)
+views.issue 			|100%
+cron_report 			|0% - Não implementado (Próxima versão)
+cron_sync 				|100%
+email_report 			|100%
+email_comment 			|100%
+email_suggestion 		|100%
+queue_categorize 		|100%
+queue_mail 				|100%
+queue_sync 				|100%

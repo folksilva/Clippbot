@@ -153,6 +153,10 @@ th {background-color: #BBBBBB;}
 
 .list-item {margin: 10px 0;}
 .list-item-title {font: 18px 'FuturaMdBTBold';}
+.pagination-container {
+	text-align: center;
+	margin: 10px;
+}
 .pagination {
 	background-color: #EFEFEF;
 	border-radius: 6px;
@@ -183,12 +187,11 @@ th {background-color: #BBBBBB;}
 .tag-color {
 	display: inline-block;
 	vertical-align: middle;
-	margin-right: 3px;
-	width: 10px;
-	height: 10px;
-	border: solid 1px #333333;
-	border-radius: 6px;
-	box-shadow: 0 1px 1px white;
+	border: none;
+	border-left: 15px solid #A40000;
+	padding-left: 3px;
+	height: 15px;
+	margin: 3px;
 }
 
 input.code_input {

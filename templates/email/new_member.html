@@ -1,8 +1,9 @@
 {% extends './base.html' %}
 
 {% block content %}
-<h1></h1>
-<p></p>
+<h1>Novo membro na sua equipe</h1>
+<p><strong>{{ member.profile.name }}</strong> acabou de entrar na sua equipe.</p>
+<p>Caso você não tenha fornecido o código de acesso da sua equipe para essa pessoa, acesse <a href='http://clippbot.appspot.com/team/{{ member.team.key.name }}/members?kick={{ member.key }}'>http://clippbot.appspot.com/team/{{ member.team.key.name }}/members?kick={{ member.key }}</a> para removê-la e depois altere o código de acesso. Os membros já cadastrados não serão afetados.</p>
 {% endblock %}
 
 {% block footer %}

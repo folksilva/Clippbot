@@ -1,8 +1,12 @@
 {% extends './base.html' %}
 
 {% block content %}
-<h1></h1>
-<p></p>
+<h1>A sua equipe não possui categorias cadastradas</h1>
+<p>Para que o Clippbot faça a análise é preciso criar as categorias de notícias.</p>
+
+<p>Por favor, acesse <a href='http://clippbot.appspot.com/team/{{ item.source_channel.team.key.name }}/categories'>http://clippbot.appspot.com/team/{{ item.source_channel.team.key.name }}/categories</a> e crie as categorias que achar necessárias.</p>
+
+<p>Depois você poderá classificar a notícia acessando <a href='http://clippbot.appspot.com/{{ item.key.name }}/edit'>http://clippbot.appspot.com/{{ item.key.name }}/edit</a>.</p>
 {% endblock %}
 
 {% block footer %}

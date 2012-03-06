@@ -74,3 +74,4 @@ class ContactForm(forms.ModelForm):
 	class Meta:
 		model = Contact
 		exclude = ['created','creator','updated','category']
+

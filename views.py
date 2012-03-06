@@ -3,6 +3,7 @@
 
 import os
 import feedparser
+import logging
 from datetime import datetime
 from dateutil import parser
 
@@ -18,11 +19,20 @@ import django
 from django import http
 from django import shortcuts
 from django.http import HttpResponseRedirect as Redirect
+from django.forms.util import ErrorList
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 
 from models import *
 from forms import *
 from utils import *
+
+
+class DivErrorList(ErrorList):
+	def __unicode__(self):
+		return self.as_divs()
+	def as_divs(self):
+		if not self: return u''
+		return u'<div class="errorlist">%s</div>' % ''.join([u'<div class="error">%s</div>' % e for e in self])
 
 def getProfile(user,request):
 	""" Força o carregamento de um perfil de usuário válido """
@@ -72,7 +82,7 @@ def index(request):
 			profile_data = {'email':user.email(),'name':user.nickname()}
 			form = ProfileForm(data=request.POST or profile_data, instance = profile, error_class=DivErrorList)
 			if not request.POST:
-				return respond(request,user,'index',{'form':form})
+				return respond(request,user,'index',{'form':form,'title':'Crie seu perfil'})
 			errors = form.errors
 			if form.is_valid():
 				try:
@@ -93,7 +103,7 @@ def index(request):
 					return Redirect('/teams')
 				except ValueError, err:
 					errors['__all__'] = unicode(err)
-			return respond(request,user,'index',{'form':form})
+			return respond(request,user,'index',{'form':form,'title':'Crie seu perfil'})
 
 		elif not profile.teams or profile.teams.count(1) == 0:
 			# Sem equipe
@@ -111,7 +121,7 @@ def index(request):
 				memberships = paginator.page(page)
 			except (EmptyPage,InvalidPage):
 				memberships = paginator.page(paginator.num_pages)
-			return respond(request,user,'index',{'memberships':memberships})
+			return respond(request,user,'index',{'memberships':memberships,'title':'Escolha a equipe'})
 
 		else:
 			# Uma equipe
@@ -151,7 +161,7 @@ def teams(request):
 			except ValueError, err:
 				errors['__all__'] = unicode(err)
 
-	return respond(request,user,'teams',{'teams':teams,'form':form})
+	return respond(request,user,'teams',{'teams':teams,'form':form,'title':'Equipes'})
 
 def team_home(request,team_key):
 	"""Home da equipe"""
@@ -168,7 +178,7 @@ def team_home(request,team_key):
 		else:
 			return Redirect('/teams')
 	
-	items_list = Item.all().filter("categories =",None).order("-date")
+	items_list = Item.all().filter("classified =",False).filter("is_archived =",False).order("-date")
 	paginator = Paginator(items_list,10)
 	
 	try:
@@ -181,7 +191,7 @@ def team_home(request,team_key):
 	except (EmptyPage,InvalidPage):
 		items = paginator.page(paginator.num_pages)
 
-	return respond(request,user,'home',{'team':team,'membership':membership,'action':'home','items':items})
+	return respond(request,user,'home',{'team':team,'membership':membership,'action':'home','items':items,'title':team.name})
 
 def team_join(request,team_key):
 	"""Entrar na equipe"""
@@ -195,7 +205,7 @@ def team_join(request,team_key):
 	if membership:
 		return Redirect('/team/%s' % team.key().name())
 	if not request.POST:
-		return respond(request,user,'home',{'team':team,'action':'join'})
+		return respond(request,user,'home',{'team':team,'action':'join','title':'Entrar na equipe'})
 	else:
 		subscription_code = request.POST.get('subscription_code')
 		if subscription_code == team.subscription_code:
@@ -203,7 +213,7 @@ def team_join(request,team_key):
 			member.put()
 			return Redirect('/team/%s' % team.key().name())
 		else:
-			return respond(request,user,'home',{'team':team,'action':'join','error':'O código secreto está incorreto.'})
+			return respond(request,user,'home',{'team':team,'action':'join','error':'O código secreto está incorreto.','title':'Entrar na equipe'})
 
 def team_exit(request,team_key):
 	"""Sair da equipe"""
@@ -217,7 +227,7 @@ def team_exit(request,team_key):
 	if not membership:
 		return Redirect('/teams/')
 	if not request.POST:
-		return respond(request,user,'home',{'team':team,'action':'exit'})
+		return respond(request,user,'home',{'team':team,'action':'exit','title':'Sair da equipe'})
 	else:
 		membership.delete()
 		return Redirect('/teams/')
@@ -243,7 +253,7 @@ def team_edit(request,team_key):
 				return Redirect('/team/%s' % team.key().name())
 			except ValueError, err:
 				errors['__all__'] = unicode(err)
-	return respond(request,user,'home',{'team':team,'membership':membership,'form':form,'action':'edit'})
+	return respond(request,user,'home',{'team':team,'membership':membership,'form':form,'action':'edit','title':'Editar a equipe'})
 
 def team_members(request,team_key):
 	"""Exibir/editar membros da equipe"""
@@ -283,7 +293,7 @@ def team_members(request,team_key):
 	except (EmptyPage,InvalidPage): 
 		members = paginator.page(paginator.num_pages)
 
-	return respond(request,user,'home',{'team':team,'membership':membership,'members':members,'action':'members'})
+	return respond(request,user,'home',{'team':team,'membership':membership,'members':members,'action':'members','title':'Membros da equipe'})
 
 def team_channels(request, team_key):
 	"""Exibir/adicionar canais RSS da equipe"""
@@ -325,7 +335,7 @@ def team_channels(request, team_key):
 	except (EmptyPage,InvalidPage): 
 		channels = paginator.page(paginator.num_pages)
 
-	return respond(request,user,'channels',{'team':team,'channels':channels})
+	return respond(request,user,'channels',{'team':team,'channels':channels,'title':'Canais RSS'})
 
 def channel(request, team_key, channel_key):
 	"""Editar o canal RSS e listar últimos itens"""
@@ -366,7 +376,7 @@ def channel(request, team_key, channel_key):
 	except (EmptyPage,InvalidPage): 
 		items = paginator.page(paginator.num_pages)
 
-	return respond(request,user,'channel',{'channel':channel,'form':form,'items':items,'team':team})
+	return respond(request,user,'channel',{'channel':channel,'form':form,'items':items,'team':team,'title':channel.title})
 
 def team_categories(request, team_key):
 	"""Exibir/adicionar/editar categorias de itens"""
@@ -419,7 +429,7 @@ def team_categories(request, team_key):
 	except (EmptyPage,InvalidPage): 
 		categories = paginator.page(paginator.num_pages)
 
-	return respond(request,user,'categories',{'categories':categories,'team':team, 'form':form, 'action':action})
+	return respond(request,user,'categories',{'categories':categories,'team':team, 'form':form, 'action':action,'title':'Categorias da equipe'})
 
 def category(request, team_key, category_key):
 	"""Exibir/adicionar/editar os contatos rápidos da categoria"""
@@ -433,6 +443,8 @@ def category(request, team_key, category_key):
 	if not membership:
 		return Redirect('/teams')
 	category = Category.get_by_key_name(category_key)
+	if not category:
+		return Redirect('/team/%s/categories' % team.key().name())
 
 	contact = Contact(category=category)
 	action = "new"
@@ -452,7 +464,7 @@ def category(request, team_key, category_key):
 		if form.is_valid():
 			try:
 				contact = form.save()
-				return Redirect('/team/%s/categories/%s' % (team.key().name(),category.key()))
+				return Redirect('/team/%s/categories/%s' % (team.key().name(),category.key().name()))
 			except ValueError, err:
 				errors['__all__'] = unicode(err)
 
@@ -466,7 +478,7 @@ def category(request, team_key, category_key):
 	except (EmptyPage,InvalidPage): 
 		contacts = paginator.page(paginator.num_pages)
 
-	return respond(request,user,'category',{'category':category,'team':team,'contacts':contacts,'form':form, 'action':action})
+	return respond(request,user,'category',{'category':category,'team':team,'contacts':contacts,'form':form, 'action':action,'title':category.name})
 
 def profile(request,profile_key=None):
 	"""Exibir perfil de um usuário"""
@@ -496,32 +508,118 @@ def profile(request,profile_key=None):
 					profile = form.save()
 				except ValueError, err:
 					errors['__all__'] = unicode(err)
-	return respond(request,user,'profile',{'p':profile,'form':form})
+	return respond(request,user,'profile',{'p':profile,'form':form,'title':profile.name})
 
-# TO-DO
 def item(request,item_key):
 	"""Exibir uma notícia"""
 	user = users.GetCurrentUser()
 	# Buscar o item pela key
-	# Se não encontrar, buscar na lista de itens excluidos
-	# Se não encontrar, exibir o erro 404
-	return respond(request,user,'item')
+	try:
+		item = Item.get_by_key_name(item_key)
+		if not item or not isinstance(item,Item):
+		# Se não encontrar, exibir o erro 404
+			raise http.Http404
+	except db.KindError:
+		raise http.Http404
+
+	if request.POST and request.POST.get('observation'):
+		profile = getProfile(user,request)
+		if profile and isinstance(profile,Profile):
+			team = Team.get_by_key_name(item.source_channel.team.key().name())
+			if team:
+				membership = Membership.all().filter('profile =',profile).filter('team =',team).get()
+				if membership:
+					observation = ItemObservation(item=item,member=membership,content=request.POST.get('observation'))
+					observation.put()
+					return Redirect("/%s" % item.key().name())
+	return respond(request,user,'item',{'item':item,'title':item.title})
 
 # TO-DO
 def item_edit(request,item_key):
 	"""Alterar as categorias de um item"""
+	# Buscar o item pela key
+	try:
+		item = Item.get_by_key_name(item_key)
+		if not item or not isinstance(item,Item):
+		# Se não encontrar, exibir o erro 404
+			raise http.Http404
+	except db.KindError:
+		raise http.Http404
+
 	user = users.GetCurrentUser()
 	profile = getProfile(user,request)
 	if not isinstance(profile,Profile):return profile;
+	team = Team.get_by_key_name(item.source_channel.team.key().name())
+	if not team:
+		return Redirect('/teams')
+	membership = Membership.all().filter('profile =',profile).filter('team =',team).get()
+	if not membership:
+		return Redirect('/teams')
+
+	categories = []
+	for c in team.categories:
+		category = {"name":c.name,"color":c.color,"key_name":c.key().name()}
+		item_category = item.categories.filter("category =",c).get()
+		if item_category:
+			if item_category.is_suggestion:
+				category['suggestion'] = True
+			else:
+				category['selected'] = True
+		categories.append(category)
+
+	selecteds = None
+	if request.POST:
+		selecteds = request.POST.getlist('categories')
+		
+		# Remover categorias excluidas
+		for c in item.categories:
+			if not c.category.key().name() in selecteds or len(selecteds) == 0:
+				logging.info("Item %s removed from category %s." % (item.key().name(),c.category.key().name()))
+				c.delete()
+		
+		# Adicionar as novas categorias
+		for s in selecteds:
+			selected_category = Category.get_by_key_name(s)
+			item_in_category = item.categories.filter("category =",selected_category).get()
+			if not item_in_category:
+				logging.info("Item %s saved in category %s." % (item.key().name(),selected_category.key().name()))
+				item_in_category = ItemInCategory(item=item,category=selected_category,is_suggestion=False)
+				item_in_category.put()
+			elif item_in_category.is_suggestion:
+				item_in_category.is_suggestion = False
+				item_in_category.put()
+			else:
+				continue
+
+			for contact in selected_category.contacts.filter("send_automatic =",True):
+				taskparams = {
+					'sender': 'comment.%s' % item.key(),
+					'to':"%s <%s>" % (contact.name,contact.email),
+					'subject':u'Nova notícia: %s' % item.title,
+					'body':getTemplate('new_item_pure',{'item':item}),
+					'html':getTemplate('new_item',{'item':item})
+				}
+				taskqueue.add(queue_name='mail',params=taskparams)
+
+
+
+		return Redirect("/%s" % item.key().name())
+
+	return respond(request,user,'item-edit',{'item':item,'categories':categories,'title':'Editar o item'})
 
 def help(request,topic=None):
 	"""Ajuda"""
 	user = users.GetCurrentUser()
 	if not topic: 
 		topic = 'help'
-	return respond(request,user,topic)
+	return respond(request,user,topic,{'title':'Ajuda do Clippbot'})
 
-# TO-DO
+def issue(request):
+	"""Formulário para envio de dúvidas"""
+	user = users.GetCurrentUser()
+	return respond(request,user,"issue",{'title':'Questões'})
+
+# Não implementado ainda
 def search(request):
 	"""Exibir os resultados de uma pesquisa"""
 	user = users.GetCurrentUser()

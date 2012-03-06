@@ -1,8 +1,19 @@
 {% extends './base.html' %}
 
 {% block content %}
-<h1></h1>
-<p></p>
+<h1>Sugestão de categorias para a notícia</h1>
+<p>
+	<strong>Título:</strong> {{ item.title }}<br>
+	<strong>Descrição:</strong> {{ item.description }}<br>
+	<strong>Link para a notícia completa:</strong> <a href="{{ item.link }}">{{ item.link }}</a>
+</p>
+<p>O Clippbot analisou essa notícia e propõem as seguintes categorias:</p>
+{{ suggestions|unordered_list }}
+<p>Por favor, leia a notícia completa e acesse <a href="http://clippbot.appspot.com/{{ item.key.name }}/edit">http://clippbot.appspot.com/{{ item.key.name }}/edit</a> ou responda esse e-mail para aceitar as sugestões de categorias dessa notícia.</p>
+
+<p>Para responder esse e-mail liste as categorias dessa notícia separadas por vírgula, como o exemplo abaixo. Apenas a primeira linha da resposta será considerada.</p>
+
+<p><code>categoria1, categoria2, categoria3</code></p>
 {% endblock %}
 
 {% block footer %}

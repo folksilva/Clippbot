@@ -1,4 +1,20 @@
 {% extends './base_pure.html' %}
-{% block content %}
+{% block content %}Sugestão de categorias para a notícia
+
+Título: {{ item.title }}
+Descrição: {{ item.description }}
+Link para a notícia completa: {{ item.link }}
+
+O Clippbot analisou essa notícia e propõem as seguintes categorias:
+{% for category in suggestions %}
+	- {{ category.name }}
+{% endfor %}
+
+Por favor, leia a notícia completa e acesse http://clippbot.appspot.com/{{ item.key.name }}/edit ou responda esse e-mail para aceitar as sugestões de categorias dessa notícia.
+
+Para responder esse e-mail liste as categorias dessa notícia separadas por vírgula, como o exemplo abaixo. Apenas a primeira linha da resposta será considerada.
+
+categoria1, categoria2, categoria3
+
 {% endblock %}
 {% block footer %}{% endblock %}
