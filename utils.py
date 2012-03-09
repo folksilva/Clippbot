@@ -3,9 +3,14 @@
 
 import re, os, logging
 
+if not 'DJANGO_SETTINGS_MODULE' in os.environ:
+	os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
+	from google.appengine.dist import use_library
+	use_library('django','1.2')
+
 from stopwords import stopwords as sw
 
-from google.appengine.ext.webapp import template
+from django.template.loader import render_to_string
 
 def unify(seq, idfun=None):
 	if idfun is None:
@@ -77,12 +82,17 @@ def remove_stopwords(text):
 def getTemplate(template_file,data={}):
 	if not template_file.endswith('.html'):
 		template_file += '.html'
-		path = os.path.join(os.path.dirname(__file__),'templates','email',template_file)
-		return template.render(path,data)
+		return render_to_string(template_file,data)
 
 def getTeamEmails(team):
 	emails = []
-	for member in team.members.filter('can_be_notified =',True):
-		emails[member.profile.name] = member.profile.email
+	for member in team.members:
+		if member.can_be_notified:
+			emails.append((member.profile.name, member.profile.email))
 	return emails
 
+def getTeamAdminEmails(team):
+	emails = {}
+	for member in team.members.filter('is_admin =',True):
+		emails.append((member.profile.name, member.profile.email))
+	return emails

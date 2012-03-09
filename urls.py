@@ -34,6 +34,8 @@
 |-------------------------------------------------------------------|-----------------------|-------|-------|-----------|
 |............/team/<team_key>/categories/<category_key>				|views.category 		|YES	|YES	|100%		|
 |-------------------------------------------------------------------|-----------------------|-------|-------|-----------|
+|............/team/<team_key>/categories/<category_key>/items		|views.category_items	|YES	|YES	|100%		|
+|-------------------------------------------------------------------|-----------------------|-------|-------|-----------|
 |..../profile														|views.my_profile 		|YES	|YES	|100%		|
 |-------------------------------------------------------------------|-----------------------|-------|-------|-----------|
 |......../profile/<profile_key>										|views.profile 			|YES	|NO		|100%		|
@@ -65,6 +67,7 @@ urlpatterns = patterns(
 	(r'^team/(?P<team_key>[a-zA-Z0-9_.-]+)/categories$','views.team_categories'),
 	(r'^team/(?P<team_key>[a-zA-Z0-9_.-]+)/categories/(?P<category_key>[a-zA-Z0-9_.-]+)$','views.category'),
 	(r'^team/(?P<team_key>[a-zA-Z0-9_.-]+)/categories/(?P<category_key>[a-zA-Z0-9_.-]+)/contacts$','views.contacts'),
+	(r'^team/(?P<team_key>[a-zA-Z0-9_.-]+)/categories/(?P<category_key>[a-zA-Z0-9_.-]+)/items$','views.category_items'),
 	(r'^profile$','views.profile'),
 	(r'^profile/(?P<profile_key>[a-zA-Z0-9_.-]+)$','views.profile'),
 	(r'^help$','views.help'),

@@ -4,51 +4,6 @@
 from google.appengine.ext import db
 from datetime import timedelta, datetime
 
-class _ChannelNextSyncPropertyDatastore():
-	def __init__(self,val):
-		self.value = val
-	def retval(self):
-		return self.value
-
-class ChannelNextSyncProperty(db.Property):
-	def __init__(self,*args,**kw):
-		super(ChannelNextSyncProperty, self).__init__(*args, **kw)
-
-	def calculateGet(self):
-		if self.instance.last_sync:
-			return self.instance.last_sync + timedelta(minutes=self.instance.frequence)
-		else:
-			now = datetime.now()
-			return datetime(now.year,now.month,now.day,now.hour,now.minute)
-
-	def attr_name(self):
-		if self._attr_name:
-			return self._attr_name()
-		else:
-			return "_" + self.name
-
-	def __get__(self, model_instance, class_instance):
-		if model_instance is None:
-			return self
-		last = model_instance.last_sync
-		next = None
-		if last:
-			next = last + timedelta(minutes=model_instance.frequence)
-		else:
-			now = datetime.now()
-			next = datetime(now.year,now.month,now.day,now.hour,now.minute)
-		setattr(model_instance,self.attr_name(),next)
-		return next
-
-	def __set__(self,model_instance,value):
-		if isinstance(value,_ChannelNextSyncPropertyDatastore):
-			setattr(model_instance,self.attr_name(),value.retval())
-		else:
-			raise db.DerivedPropertyError("Calculado automaticamente, nada a fazer")
-
-	def make_value_from_datastore(self,value):
-		return _ChannelNextSyncPropertyDatastore(value)
-
 class Team(db.Model):
 	"""
 		Uma equipe de usuários do Clippbot
@@ -90,9 +45,9 @@ class Membership(db.Model):
 	# Equipe ao qual o membro pertence
 	team = db.ReferenceProperty(reference_class=Team,required=True,collection_name="members")
 	# O membro é administrador da equipe?
-	is_admin = db.BooleanProperty(default=False)
+	is_admin = db.BooleanProperty(default=False,required=True)
 	# O membro pode receber notíficações
-	can_be_notified = db.BooleanProperty(default=True)
+	can_be_notified = db.BooleanProperty(default=True,required=True)
 	# Data da criação do membro
 	created = db.DateTimeProperty(auto_now_add=True)
 	# Data de modificação do membro
@@ -114,14 +69,20 @@ class Channel(db.Model):
 	team = db.ReferenceProperty(reference_class=Team,required=True,collection_name="channels")
 	# Data da última sincronização do canal
 	last_sync = db.DateTimeProperty()
-	# Data da próxima sincronização do canal
-	next_sync = ChannelNextSyncProperty(required=True)
 	# Frequencia de sincronização do canal em minutos
 	frequence = db.IntegerProperty(default=60)
 	# Data da criação do canal
 	date = db.DateTimeProperty()
 	# Data da modificação do canal
 	updated = db.DateTimeProperty()
+
+	# Data da próxima sincronização do canal
+	def next_sync(self):
+		if self.last_sync:
+			return self.last_sync + timedelta(minutes=self.frequence)
+		else:
+			now = datetime.now()
+			return datetime(now.year,now.month,now.day,now.hour,now.minute)
 
 class Category(db.Model):
 	"""
@@ -159,9 +120,15 @@ class Item(db.Model):
 	# Canal origem da notícia
 	source_channel = db.ReferenceProperty(reference_class=Channel,required=True,collection_name="items")
 	# O item está arquivado?
-	is_archived = db.BooleanProperty(default=False)
+	is_archived = db.BooleanProperty(default=False,required=True)
 	# O item foi classificado?
-	classified = db.BooleanProperty(default=False)
+	classified = db.BooleanProperty(default=False,required=True)
+	# Equipe dona do item
+	team = db.ReferenceProperty(reference_class=Team,collection_name='items')
+	# O item é novo
+	is_new = db.BooleanProperty(default=True,required=True)
+	# O item falhou na categorização
+	failure = db.StringProperty()
 
 class ItemInCategory(db.Model):
 	"""
@@ -172,7 +139,9 @@ class ItemInCategory(db.Model):
 	# Categoria
 	category = db.ReferenceProperty(reference_class=Category,required=True,collection_name="items")
 	# Essa categoria é uma sugestão?
-	is_suggestion = db.BooleanProperty(default=False)
+	is_suggestion = db.BooleanProperty(default=False,required=True)
+	# O item foi adicionado a categoria recentemente?
+	is_new = db.BooleanProperty(default=True,required=True)
 
 class Contact(db.Model):
 	"""

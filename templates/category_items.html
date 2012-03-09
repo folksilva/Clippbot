@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="grid_12">
+	<a href="/team/{{ team.key.name }}/categories">&larr; Voltar às categorias</a> | 
+	<a href="/team/{{ team.key.name }}/categories/{{ category.key.name }}">&rarr; Ver contatos da categoria</a>
+	<h1>
+		<div class="tag-color" style="border-color:#{{ category.color }};"></div>
+		Itens da categoria {{ category.name }}
+	</h1>
+
+	{% if category.items.count < 10 and category.items.count > 0 %}
+	São necessários 10 itens para que essa categoria seja usada na classificação automática, atualmente possui apenas {{ category.items.count }}.
+	{% endif %}
+
+	<div class="result-list">
+	{% for i in items.object_list %}
+	{% with i.item as item %}
+	<div class="list-item">
+		<div>
+		<a class="list-item-title" href='/{{ item.key.name }}'>{{ item.title }}</a> (à <span title="{{ item.date|date:"d/m/Y H:i" }}"> {{ item.date|timesince }}</span>)
+		<div class="no-important">{{ item.link }}</div>
+		</div>
+		<div>
+			{{ item.description }}
+		</div>
+		<div>
+			<a href="{{ item.link }}">Ver na Web</a>
+		</div>
+	</div>
+	{% endwith %}
+	{% empty %}
+	<div>Esta categoria ainda não possui items para exibir.</div>
+	{% endfor %}
+	</div>
+
+	{% with items as pages %}
+	{% include 'pagination.html' %}
+	{% endwith %}
+
+</div>
+{% endblock %}

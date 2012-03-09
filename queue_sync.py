@@ -5,7 +5,7 @@ import feedparser, re
 
 from utils import *
 from models import *
-from datetime import datetime
+from datetime import datetime, timedelta
 from dateutil import parser
 
 from google.appengine.api.labs import taskqueue
@@ -15,7 +15,7 @@ from google.appengine.ext.webapp.util import run_wsgi_app
 
 class SyncWorker(webapp.RequestHandler):
 	def get(self):
-		self.response.out.write('<h1>Clippbot</h1>Este é um trabalho de plano de fundo! Nada a fazer.<br>This is a background work! Nothing to do.')
+		self.response.out.write(u'<h1>Clippbot</h1>Este é um trabalho de plano de fundo! Nada a fazer.<br>This is a background work! Nothing to do.')
 
 	def post(self):
 		key = self.request.get('channel')
@@ -44,12 +44,13 @@ class SyncWorker(webapp.RequestHandler):
 							author=item_author,
 							date=item_date,
 							enclosure=item_enclosure,
+							team=channel.team,
 							source_channel=channel)
 						item.put()
 						# Colocar a categorização automatica na fila
 						taskqueue.add(queue_name='categorize',params={'item':item.key(),'team':channel.team.key().name()})
 					except:
-						logging.error("O item não pode ser salvo")
+						logging.error(u"O item não pode ser salvo")
 
 		# Marcar a última atualização do canal
 		channel.last_sync = datetime.now()

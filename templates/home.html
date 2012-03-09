@@ -60,6 +60,13 @@
 			{% else %}
 				<a href="?change={{ member.key }}&level=a">Tornar administrador</a>
 			{% endif %} | 
+			{% if member.profile.key == profile.key %}
+				{% if member.can_be_notified %}
+					<a href="?notify={{ member.key }}&can=n">Não receber notificações da equipe</a>
+				{% else %}
+					<a href="?notify={{ member.key }}&can=y">Receber notificações da equipe</a>
+				{% endif %}
+			{% endif %} | 
 			<a href="?kick={{ member.key }}" onclick="return confirm('Realmente deseja retirar {{ member.profile.name }} da equipe?')">Retirar da equipe</a>
 		</div>
 		{% endif %}
@@ -77,7 +84,7 @@
 	{% for item in items.object_list %}
 	<div class="list-item">
 		<div>
-		<a class="list-item-title" href='/{{ item.key.name }}'>{{ item.title }}</a> | <strong>{{ item.source_channel.title }}</strong> {{ item.date|date:"d/m/Y" }}
+		<a class="list-item-title" href='/{{ item.key.name }}'>{{ item.title }}</a> | <strong>{{ item.source_channel.title }}</strong> à <span title="{{ item.date|date:"d/m/Y H:i" }}"> {{ item.date|timesince }}</span>
 		</div>
 		<div>
 		{{ item.description }} 
@@ -92,7 +99,7 @@
 	{% include 'pagination.html' %}
 	{% endwith %}
 </div>
-<div class="grid_4 sidepanel">
+<div class="grid_4 sidepanel"><div class="margin">
 	<strong>Opções da equipe</strong>
 	<ul class="help_topics">
 			{% if membership.is_admin %}<li><a href="/team/{{ team.key.name }}/edit">Editar</a></li>{% endif %}
@@ -102,7 +109,7 @@
 			<br>
 			<li><a href="/team/{{ team.key.name }}/exit">Sair da equipe</a></li>
 		</ul>
-</div>
+</div></div>
 	{% endif %}{% endif %}{% endif %}
 {% endif %}
 {% endblock %}

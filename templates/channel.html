@@ -18,7 +18,7 @@
 	{% for item in items.object_list %}
 	<div class="list-item">
 		<div>
-		<a class="list-item-title" href='/{{item.key.name }}'>{{ item.title }}</a> ({{ item.date|date:"d/m/Y H:i:s" }})
+		<a class="list-item-title" href='/{{item.key.name }}'>{{ item.title }}</a> (à <span title="{{ item.date|date:"d/m/Y H:i" }}"> {{ item.date|timesince }}</span>)
 		<div class="no-important">{{ item.link }}</div>
 		</div>
 		<div>

@@ -1,0 +1,28 @@
+{% extends './base_email.html' %}
+
+{% block content %}
+<h1>Itens com sugestões do Clippbot</h1>
+<p>Olá {{ name }},</p>
+<p>Durante a classificação automática o Clippbot sugeriu categorias para os itens abaixo.</p>
+<p>Você pode clicar no título da notícia para vê-la no Clippbot, ou usar um dos links logo abaixo de cada uma.<br>Se você clicar em <i>classificar por e-mail</i> será necessário colocar os nomes das categorias separadas por vírgula, desta forma: "<strong><code>categoria 1, categoria 2, categoria 3</code></strong>", apenas a primeira linha será considerada.</p>
+<p></p>
+{% for item in items %}
+<div style="margin-top:15px;">
+	<a href="http://clippbot.appspot.com/{{ item.key.name }}"><h3>{{ item.title }}</h3></a>
+	<div>{{ item.description }}</div>
+	<div style="color:#CCCCCC;"><strong>Sugestões:</strong> 
+		{% for ic in item.categories %}
+			{{ ic.category.name }}{% include "comma.html" %}
+		{% endfor %}
+	</div>
+	<div>
+		<a href="{{ item.link }}">Ler notícia completa</a> | 
+		<a href="mailto:suggestion.{{ item.key }}@clippbot.appspotmail.com">Classificar por e-mail</a> | 
+		<a href="http://clippbot.appspot.com/{{ item.key.name }}/edit">Classificar no Clippbot</a>
+	</div>
+</div>
+{% endfor %}
+{% endblock %}
+
+{% block footer %}
+{% endblock %}

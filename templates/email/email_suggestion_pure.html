@@ -1,0 +1,23 @@
+{% extends './base_email_pure.html' %}
+{% block content %}Itens com sugestões do Clippbot
+
+Olá {{ name }},
+
+Durante a classificação automática o Clippbot sugeriu categorias para os itens abaixo.
+
+Você pode visitar o link no título da notícia para vê-la no Clippbot, ou usar um dos links logo abaixo de cada uma.
+Envie um e-mail para o endereço em "classificar por e-mail" para definir as categorias. Será necessário colocar os nomes das categorias separadas por vírgula, desta forma: "categoria 1, categoria 2, categoria 3", apenas a primeira linha será considerada.
+
+{% for item in items %}
+
+	{{ item.title }} [http://clippbot.appspot.com/{{ item.key.name }}]
+	{{ item.description }}
+	Sugestões: {% for ic in item.categories %}{{ ic.category.name }}{% include "comma.html" %}{% endfor %}
+	
+	Ler notícia completa [{{ item.link }}]
+	Classificar por e-mail [suggestion.{{ item.key }}@clippbot.appspotmail.com]
+	Classificar no Clippbot [http://clippbot.appspot.com/{{ item.key.name }}/edit]
+
+{% endfor %}
+{% endblock %}
+{% block footer %}{% endblock %}

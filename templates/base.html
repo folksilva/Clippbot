@@ -37,9 +37,9 @@
 		<script type="text/javascript" src="/res/js/colorpicker.js"></script>
 	</head>
 	<body>
-		<div class="container_12">
+		<section class="container_12">
 			<div class="grid_12" id="header">
-				<div class="grid_8 alpha" id="header">
+				<div class="grid_8 alpha">
 					<a href="/">
 						<img src="/res/img/clippbot-logo.png" class="logo"/>
 					</a>
@@ -48,8 +48,10 @@
 				<div class="grid_4 omega">
 					{% comment %}
 					{% if user %}
-					<input type="search" name="q" value="{{ query }}" placeholder="Buscar notícias">
-					<button type="submit" class="search_submit"><img src="/res/img/search.png"/></button>
+					<div class="search-box">
+						<input type="search" name="q" value="{{ query }}" placeholder="Buscar notícias">
+						<button type="submit" class="search_submit"><img src="/res/img/search.png"/></button>
+					</div>
 					{% endif %}
 					{% endcomment %}
 				</div>
@@ -57,11 +59,14 @@
 			</div>
 			
 			<div class="clear"></div>
-			<hr>
+			<!--<hr>-->
+			<article>
 			{% block content %}{% endblock %}
+			</article>
 			<div class="clear"></div>
-			<hr>
-			
+			<!--<hr>-->
+		</section>
+		<footer class="container_12">
 			<div class="grid_12" id="footer">
 				{% if user %}
 					<a href="/profile">
@@ -75,7 +80,7 @@
 				<div><label class="strongest">Clippbot</label><label class="beta">beta</label> &copy; 2012</div>
 				<div>Contate o <a href="mailto:folksilva@gmail.com?subject=Clippbot">desenvolvedor</a> | Obtenha <a href="/help">ajuda</a> | <a href="/issue">Envie</a> sua opinião</div>
 			</div>
-		</div>
+		</footer>
 		<script type="text/javascript">
 		$('textarea').attr('rows','4').attr('cols','');
 		</script>

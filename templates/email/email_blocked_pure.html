@@ -1,0 +1,16 @@
+{% extends './base_email_pure.html' %}
+{% block content %}Contato bloqueado no Clippbot
+
+Olá {{ name }},
+
+O contato {{ contact.name }} ({{ contact.email }}), da categoria {{ contact.category.name }}, bloqueou os e-mails do Clippbot.
+
+O e-mail da solicitação continha o seguinte texto:
+
+-------------------------------------------------------------
+{{ comment }}
+-------------------------------------------------------------
+
+Você pode desbloqueá-lo no Clippbot, marcando a caixa "Enviar e-mails automáticos?" na edição do contato.
+{% endblock %}
+{% block footer %}{% endblock %}

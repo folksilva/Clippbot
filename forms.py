@@ -57,7 +57,7 @@ class ChannelForm(forms.ModelForm):
 	frequence = form.IntegerField(required=True,label='Intervalo (min)',help_text='Defina o intervalo das atualizações, mínimo 5 e no máximo 1440',min_value=5,max_value=1440)
 	class Meta:
 		model = Channel
-		exclude = ['team','last_sync','date','updated']
+		exclude = ['team','last_sync','date','updated','next_sync']
 
 class CategoryForm(forms.ModelForm):
 	name = form.CharField(required=True,label='Nome',help_text='Digite o nome da categoria')

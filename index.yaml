@@ -64,14 +64,42 @@ indexes:
 - kind: Item
   properties:
   - name: classified
+  - name: date
+
+- kind: Item
+  properties:
+  - name: classified
   - name: is_archived
   - name: date
     direction: desc
 
 - kind: Item
   properties:
+  - name: classified
+  - name: is_archived
+  - name: team
+  - name: date
+    direction: desc
+
+- kind: Item
+  properties:
+  - name: is_new
+  - name: failure
+
+- kind: Item
+  properties:
   - name: title
   - name: date
+
+- kind: Membership
+  properties:
+  - name: team
+  - name: can_be_notified
+
+- kind: Membership
+  properties:
+  - name: team
+  - name: is_admin
 
 - kind: Team
   properties:

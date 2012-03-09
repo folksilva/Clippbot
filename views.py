@@ -26,7 +26,6 @@ from models import *
 from forms import *
 from utils import *
 
-
 class DivErrorList(ErrorList):
 	def __unicode__(self):
 		return self.as_divs()
@@ -177,10 +176,8 @@ def team_home(request,team_key):
 			return Redirect('/team/%s/join' % team.key().name())
 		else:
 			return Redirect('/teams')
-	
-	items_list = Item.all().filter("classified =",False).filter("is_archived =",False).order("-date")
-	paginator = Paginator(items_list,10)
-	
+
+	paginator = Paginator(team.items.filter("classified =",False).filter("is_archived =",False).order("-date"),10)
 	try:
 		page = int(request.GET.get('page','1'))
 	except ValueError:
@@ -211,6 +208,14 @@ def team_join(request,team_key):
 		if subscription_code == team.subscription_code:
 			member = Membership(profile=profile,team=team)
 			member.put()
+			for name,email in getTeamAdminEmails(team):
+				taskparams = {
+					'to':'%s <%s>' % (name,email),
+					'subject':'Novo membro',
+					'body':getTemplate('email_new_member_pure',{'member':member}),
+					'html':getTemplate('email_new_member',{'member':member})
+				}
+				taskqueue.add(queue_name='mail',params=taskparams)
 			return Redirect('/team/%s' % team.key().name())
 		else:
 			return respond(request,user,'home',{'team':team,'action':'join','error':'O código secreto está incorreto.','title':'Entrar na equipe'})
@@ -280,6 +285,15 @@ def team_members(request,team_key):
 		member = Membership.get(request.GET.get('kick'))
 		if member: 
 			member.delete()
+			return Redirect('/team/%s/members' % team.key().name())
+	elif request.GET.get('notify') and request.GET.get('can'):
+		member = Membership.get(request.GET.get('notify'))
+		if member: 
+			if request.GET.get('can') == "y":
+				member.can_be_notified = True
+			elif request.GET.get('can') == "n":
+				member.can_be_notified = False
+			member.put()
 			return Redirect('/team/%s/members' % team.key().name())
 	
 	members_list = Membership.all().filter('team =',team)
@@ -413,7 +427,7 @@ def team_categories(request, team_key):
 				name = form.cleaned_data['name']
 				color = form.cleaned_data['color']
 				key_name = "_".join(name.lower().split())
-				category = Category(key_name=key_name,name=name,color=color,team=team)
+				category = Category(parent=team,key_name=key_name,name=name,color=color,team=team)
 				category.put()
 				return Redirect('/team/%s/categories' % team.key().name())
 			except ValueError, err:
@@ -442,7 +456,7 @@ def category(request, team_key, category_key):
 	membership = Membership.all().filter('profile =',profile).filter('team =',team).get()
 	if not membership:
 		return Redirect('/teams')
-	category = Category.get_by_key_name(category_key)
+	category = Category.get_by_key_name(category_key,parent=team)
 	if not category:
 		return Redirect('/team/%s/categories' % team.key().name())
 
@@ -479,6 +493,34 @@ def category(request, team_key, category_key):
 		contacts = paginator.page(paginator.num_pages)
 
 	return respond(request,user,'category',{'category':category,'team':team,'contacts':contacts,'form':form, 'action':action,'title':category.name})
+
+def category_items(request, team_key, category_key):
+	"""Exibir os itens da categoria"""
+	user = users.GetCurrentUser()
+	profile = getProfile(user,request)
+	if not isinstance(profile,Profile):return profile;
+	team = Team.get_by_key_name(team_key)
+	if not team:
+		return Redirect('/teams')
+	membership = Membership.all().filter('profile =',profile).filter('team =',team).get()
+	if not membership:
+		return Redirect('/teams')
+	category = Category.get_by_key_name(category_key,parent=team)
+	if not category:
+		return Redirect('/team/%s/categories' % team.key().name())
+
+	items_list = category.items
+	paginator = Paginator(items_list,10)
+	try: 
+		page = int(request.GET.get('page','1')) 
+	except ValueError: 
+		page = 1
+	try: 
+		items = paginator.page(page) 
+	except (EmptyPage,InvalidPage): 
+		items = paginator.page(paginator.num_pages)
+
+	return respond(request,user,'category_items',{'category':category,'team':team,'items':items,'title':'Itens da categoria'})
 
 def profile(request,profile_key=None):
 	"""Exibir perfil de um usuário"""
@@ -579,29 +621,32 @@ def item_edit(request,item_key):
 		
 		# Adicionar as novas categorias
 		for s in selecteds:
-			selected_category = Category.get_by_key_name(s)
+			selected_category = Category.get_by_key_name(s,parent=team)
 			item_in_category = item.categories.filter("category =",selected_category).get()
 			if not item_in_category:
 				logging.info("Item %s saved in category %s." % (item.key().name(),selected_category.key().name()))
-				item_in_category = ItemInCategory(item=item,category=selected_category,is_suggestion=False)
+				item_in_category = ItemInCategory(item=item,category=selected_category,is_suggestion=False,is_new=True)
 				item_in_category.put()
 			elif item_in_category.is_suggestion:
 				item_in_category.is_suggestion = False
+				item_in_category.is_new = True
 				item_in_category.put()
 			else:
 				continue
 
-			for contact in selected_category.contacts.filter("send_automatic =",True):
+			"""for contact in selected_category.contacts.filter("send_automatic =",True):
 				taskparams = {
 					'sender': 'comment.%s' % item.key(),
 					'to':"%s <%s>" % (contact.name,contact.email),
-					'subject':u'Nova notícia: %s' % item.title,
+					'subject':u'[%s] Nova notícia: %s' % (selected_category.name,item.title),
 					'body':getTemplate('new_item_pure',{'item':item}),
 					'html':getTemplate('new_item',{'item':item})
 				}
-				taskqueue.add(queue_name='mail',params=taskparams)
+				taskqueue.add(queue_name='mail',params=taskparams)"""
 
-
+		if len(selecteds) > 0:
+			item.classified = True
+			item.put()
 
 		return Redirect("/%s" % item.key().name())
 

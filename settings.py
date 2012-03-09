@@ -5,7 +5,7 @@
 
 import os
 
-DEBUG = True
+DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = ()
@@ -19,7 +19,8 @@ DATABASE_PASSWORD = ''
 DATABASE_HOST = ''
 DATABASE_PORT = ''
 
-TIME_ZONE = 'America/Sao_Paulo Brazil/East'
+#TIME_ZONE = 'America/Sao_Paulo Brazil/East'
+TIME_ZONE = 'America/Sao_Paulo'
 LANGUAGE_CODE = 'pt-br'
 
 SITE_ID = 1
@@ -45,6 +46,7 @@ ROOT_URLCONF = 'urls'
 
 TEMPLATE_DIRS = (
 	os.path.join(os.path.dirname(__file__),'templates'),
+	os.path.join(os.path.dirname(__file__),'templates','email'),
 )
 
 INSTALLED_APPS = (

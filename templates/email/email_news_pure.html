@@ -1,0 +1,21 @@
+{% extends './base_email_pure.html' %}
+{% block content %}Novas notícias
+
+Olá {{ contact.name }},
+
+As notícias abaixo foram capturadas pelo Clippbot e colocadas na categoria {{ category.name }}. Você é um dos contatos relacionados a essa categoria, se acredita ter recebido essa mensagem por engano envie um e-mail para block.{{ contact.key }}@clippbot.appspotmail.com.
+
+Você pode visitar o link no título da notícia para vê-la no Clippbot, ou usar o link logo abaixo de cada uma para ler a notícia completa.
+Envie um e-mail para o endereço em "Enviar comentário" para publicar as suas observações sobre a notícia.
+
+{% for item in items %}
+
+	{{ item.title }} [http://clippbot.appspot.com/{{ item.key.name }}]
+	{{ item.description }}
+	
+	Ler notícia completa [{{ item.link }}]
+	Enviar comentário [comment.{{ item.key }}@clippbot.appspotmail.com]
+
+{% endfor %}
+{% endblock %}
+{% block footer %}{% endblock %}

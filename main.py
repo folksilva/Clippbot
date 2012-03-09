@@ -8,9 +8,12 @@ import os
 import sys
 import logging
 import __builtin__
+import datetime
+import time
 
 # Importações do Google App Engine
 from google.appengine.ext.webapp import util
+
 
 import pickle
 sys.modules['cPickle'] = pickle
@@ -41,6 +44,8 @@ def main():
 
   # Run the WSGI CGI handler with that application.
   util.run_wsgi_app(application)
+
+  logging.info(datetime.datetime.now())
 
 if __name__ == '__main__':
   main()

@@ -1,0 +1,13 @@
+{% extends './base_email.html' %}
+
+{% block content %}
+<h1>Contato bloqueado no Clippbot</h1>
+<p>Olá {{ name }},</p>
+<p>O contato <strong>{{ contact.name }}</strong> ({{ contact.email }}), da categoria {{ contact.category.name }}, bloqueou os e-mails do Clippbot.</p>
+<p>O e-mail da solicitação continha o seguinte texto:</p>
+<blockquote>{{ comment }}</blockquote>
+<p>Você pode desbloqueá-lo no Clippbot, marcando a caixa "<i>Enviar e-mails automáticos?</i>" na edição do contato.</p>
+{% endblock %}
+
+{% block footer %}
+{% endblock %}

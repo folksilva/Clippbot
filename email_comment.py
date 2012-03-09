@@ -14,7 +14,7 @@ from google.appengine.ext.webapp.mail_handlers import InboundMailHandler
 class EmailHandler(InboundMailHandler):
 	def receive(self, message):
 		# Esse e-mail é sobre qual item?
-		item_key = message.to[8:][:-25]
+		item_key = re.search('comment\..*@',message.to).group()[8:][:-1]
 		item = Item.get(item_key)
 		if not item or not isinstance(item,Item):
 			# O e-mail não é sobre um item conhecido
@@ -22,7 +22,9 @@ class EmailHandler(InboundMailHandler):
 			return
 
 		# Quem enviou a mensagem?
-		sender_email = message.sender
+		sender_email = message.sender.strip()
+		if "<" in sender_email and ">" in sender_email:
+			sender_email = re.search('<.*@.*>',sender_email).group()[1:][:-1]
 		sender = None
 
 		# É um contato de uma categoria desse item?
@@ -31,9 +33,10 @@ class EmailHandler(InboundMailHandler):
 			if sender:
 				break
 		# Se não é um contato, é um membro da equipe?
-		for member in item.categories.get().category.team.members:
-			if member.profile.email == sender_email:
-				sender = member
+		if sender == None:
+			for member in item.source_channel.team.members:
+				if member.profile.email == sender_email:
+					sender = member
 
 		if sender == None:
 			# Se não é conhecido ignore o e-mail
@@ -60,7 +63,7 @@ class EmailHandler(InboundMailHandler):
 		logging.info(u"comentário adicionado ao item %s por %s" % (item.key().name(),sender_email))
 
 def main():
-	run_wsgi_app(webapp.WSGIApplication([EmailHandler.mapping()],debug=True))
+	run_wsgi_app(webapp.WSGIApplication([EmailHandler.mapping()]))
 
 if __name__ == "__main__":
 	main()

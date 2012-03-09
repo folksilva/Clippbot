@@ -3,6 +3,10 @@ cron:
   url: /_ah/cron/sync
   schedule: every 5 minutes
 
+- description: Coletor de lixo
+  url: /_ah/cron/garbage
+  schedule: every friday 00:00
+
 #- description: Enviar relatorios
 #  url: /_ah/cron/report
 #  schedule: every friday 18:00

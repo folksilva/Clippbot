@@ -20,7 +20,7 @@
 			</div></a>
 		{% endif %}</div>
 	<p>{{ item.description }}</p>
-	<p>{{ item.author }}, {{ item.date|date:"d/m/Y H:i" }} via <a href="{{ item.source_channel.link }}">{{ item.source_channel.title }}</a>.</p>
+	<p>{{ item.author }},  à <span title="{{ item.date|date:"d/m/Y H:i" }}"> {{ item.date|timesince }}</span> via <a href="{{ item.source_channel.link }}">{{ item.source_channel.title }}</a>.</p>
 	<div> 
 		{{ is_archived|yesno:"Arquivado | ," }}
 		<a href="{{ item.link }}">Ver na Web</a>

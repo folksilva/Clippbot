@@ -3,16 +3,23 @@
  */
 
  /* Importações de folhas de estilos complementares */
- /*@import 'reset.css';*/
+ @import 'reset.css';
  @import 'fonts.css';
 
 
 /* Estilos genéricos */
 body {
-	background: #EEEEEE url('/res/img/bg.png');
-	font: 14px/1.5 'FuturaLtBTLight','Helvetica Neue', Arial, 'Liberation Sans', FreeSans, sans-serif;
+	background: #EEEEEE url('/res/img/bg.jpg');
+	font: 0.8em 'Helvetica Neue', Arial, 'Liberation Sans', FreeSans, sans-serif;
 	color: #333333;
 	text-shadow: 0 1px 1px white;
+}
+section {
+	background-color: #FFFFFF;
+	box-shadow: 2px 2px 5px #333333;
+	margin-top: 15px;
+	margin-bottom: 20px;
+	padding: 15px 0;
 }
 
 hr {
@@ -24,6 +31,13 @@ hr {
 h1, h2 {
 	font-family: 'FuturaMdBTBold';
 }
+h1 {font-size: 2em;padding: 10px 0 5px 0;}
+h2 {font-size: 1.15em;padding: 6px 0 3px 0;}
+h3 {font-size: 1em;}
+
+img {
+	max-width: 100%;
+}
 
 input:not([type="button"]), 
 input:not([type="checkbox"]), 
@@ -32,17 +46,13 @@ input:not([type="image"]),
 input:not([type="radio"]), 
 input:not([type="reset"]), 
 textarea {
-	font: 14px/1.5 'FuturaLtBTLight','Helvetica Neue', Arial, 'Liberation Sans', FreeSans, sans-serif;
+	font: 14px/1.5 'Helvetica Neue', Arial, 'Liberation Sans', FreeSans, sans-serif;
 	color: #333333;
 	display: block;
 	width: 100%;
 	padding: 0;
 	margin: 0;
-	border: solid 1px;
-	border-top-color: #333333;
-	border-left-color: #666666;
-	border-bottom-color: #FFFFFF;
-	border-right-color: #F3F3F3;
+	border: solid 1px #222222;
 	background-color: #FAFAFA;
 	outline: none;
 	transition-duration:1s;
@@ -60,6 +70,7 @@ input:not([type="reset"]):focus,
 textarea:focus {
 	color: #000000;
 	background-color: #FFFFFF;
+	border-color: #D47500;
 }
 input[type="checkbox"], input[type="radio"] {
 	display: inline;
@@ -68,7 +79,7 @@ input[type="checkbox"], input[type="radio"] {
 button[type="submit"], input[type="submit"]  {
 	background-color: #D40000;
 	border: none;
-	font: 18px 'FuturaMdBTBold';
+	font: 1.15em 'FuturaMdBTBold';
 	color: white;
 	text-shadow: 0 1px 1px #640000;
 	box-shadow: 1px 1px 0 #640000;
@@ -80,14 +91,15 @@ button[type="submit"]:hover, input[type="submit"]:hover {
 	background-color: #E40000;
 }
 
-input[name="q"] {
+div.search-box {
 	border: solid 1px #D40000;
-	border-right: none;
+	background-color: #D40000;
+	padding: 0;
+}
+
+input[name="q"] {
+	border: none;
 	font: 16px 'FuturaLtBTLight' bold;
-	box-shadow: 1px 1px 0 #640000;
-	-o-box-shadow: 1px 1px 0 #640000;
-	-moz-box-shadow: 1px 1px 0 #640000;
-	-webkit-box-shadow: 1px 1px 0 #640000;
 	margin: 0;
 	padding: 0px;
 	height: 23px !important;
@@ -97,15 +109,18 @@ input[name="q"] {
 	display: inline-block;
 }
 button.search_submit {
-	width: 100%;
 	font: 16px 'FuturaLtBTLight' bold;
+	border:none;
 	margin: 0;
-	margin-left: -1px;
 	height: 23px !important;
 	width: 10%;
 	overflow: hidden;
 	display: inline-block;
 	vertical-align: bottom;
+	box-shadow: none;
+	-o-box-shadow: none;
+	-moz-box-shadow: none;
+	-webkit-box-shadow: none;
 }
 
 a {
@@ -147,12 +162,12 @@ th {background-color: #BBBBBB;}
 	background-color: #EFEFEF;
 	border-radius: 6px;
 }
-.help_nav .margin, .sidepanel .margin { margin:4px;}
+.help_nav div.margin, .sidepanel div.margin { padding:4px !important;}
 .help_topics {padding:0;margin:0;}
 .help_topics li {display: list-item;list-style: none;}
 
 .list-item {margin: 10px 0;}
-.list-item-title {font: 18px 'FuturaMdBTBold';}
+.list-item-title {font: 1.15em 'FuturaMdBTBold';}
 .pagination-container {
 	text-align: center;
 	margin: 10px;
@@ -200,8 +215,12 @@ input.code_input {
 }
 
 /* IDs genéricos */
+#header {
+	margin-bottom: 15px;
+}
 #footer {
 	text-align: center;
+	margin-bottom: 10px;
 }
 #search {
 	text-align: right;

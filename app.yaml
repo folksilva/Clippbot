@@ -18,6 +18,10 @@ handlers:
   script: cron_sync.py
   login: admin
 
+- url: /_ah/cron/garbage
+  script: cron_garbage.py
+  login: admin
+
 - url: /_ah/cron/report
   script: cron_report.py
   login: admin
@@ -44,6 +48,14 @@ handlers:
 
 - url: /_ah/mail/suggestion\.(.*)@.*clippbot\.appspotmail\.com
   script: email_suggestion.py
+  login: admin
+
+- url: /_ah/mail/block\.(.*)@.*clippbot\.appspotmail\.com
+  script: email_block.py
+  login: admin
+
+- url: /_ah/reset
+  script: reset.py
   login: admin
 
 - url: .*

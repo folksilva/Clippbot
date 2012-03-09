@@ -36,7 +36,7 @@ class CategorizeWorker(webapp.RequestHandler):
 	# Funções do webapp
 
 	def get(self):
-		self.response.out.write('<h1>Clippbot</h1>Este é um trabalho de plano de fundo! Nada a fazer.<br>This is a background work! Nothing to do.')
+		self.response.out.write(u'<h1>Clippbot</h1>Este é um trabalho de plano de fundo! Nada a fazer.<br>This is a background work! Nothing to do.')
 
 	def post(self):
 		""" Algoritmo de auto categorização do item """
@@ -46,14 +46,16 @@ class CategorizeWorker(webapp.RequestHandler):
 		item = Item.get(key)
 		team = Team.get_by_key_name(t_key)
 		if not item or not team:
-			logging.error("A categorização não recebeu dados")
+			logging.error(u"A categorização não recebeu dados")
 			return
 		title_terms = unify(remove_stopwords(item.title.lower()).split())
 		description_terms = unify(remove_stopwords(item.description.lower()).split())
 		if len(title_terms) < 3 or len(description_terms) < 3:
 			# Notificar a equipe que este item não possui dados suficientes para trabalhar
-			logging.warning("O item %s não possui dados suficientes para analisar" % key)
-			for name, email in getTeamEmails(team):
+			logging.warning(u"O item %s não possui dados suficientes para analisar" % key)
+			item.failure = u"O item não possui dados suficientes para analisar"
+			item.put()
+			"""for name, email in getTeamEmails(team):
 				taskparams = {
 					'sender': 'category.%s' % key,
 					'to':'%s <%s>' % (name,email),
@@ -61,19 +63,21 @@ class CategorizeWorker(webapp.RequestHandler):
 					'body':getTemplate('bad_item_pure',{'item':item}),
 					'html':getTemplate('bad_item',{'item':item})
 				}
-				taskqueue.add(queue_name='mail',params=taskparams)
+				taskqueue.add(queue_name='mail',params=taskparams)"""
 			return
 		if team.categories.count(1) == 0:
 			# Notificar a equipe que não possui categorias cadastradas
-			logging.warning("A equipe não possui categorias cadastradas. Impossível analizar o item %s" % key)
-			for name, email in getTeamEmails(team):
+			logging.warning(u"A equipe não possui categorias cadastradas. Impossível analizar o item %s" % key)
+			item.failure = u"A equipe não possui categorias cadastradas"
+			item.put()
+			"""for name, email in getTeamEmails(team):
 				taskparams = {
 					'to':'%s <%s>' % (name,email),
 					'subject':u'O item não pode ser classificado',
 					'body':getTemplate('no_team_pure',{'item':item}),
 					'html':getTemplate('no_team',{'item':item})
 				}
-				taskqueue.add(queue_name='mail',params=taskparams)
+				taskqueue.add(queue_name='mail',params=taskparams)"""
 			return
 
 		# Variaveis do algoritmo
@@ -82,7 +86,7 @@ class CategorizeWorker(webapp.RequestHandler):
 		# Construir os corpus 
 		for category in team.categories:
 			if category.items.count(11) < 10:
-				logging.info("A categoria %s foi ignorada por não conter dados suficientes para análise do item %s" % (category.name,key))
+				logging.info(u"A categoria %s foi ignorada por não conter dados suficientes para análise do item %s" % (category.name,key))
 				continue
 
 			titles = ""
@@ -113,16 +117,21 @@ class CategorizeWorker(webapp.RequestHandler):
 		logging.info(scores)
 		# Analisar os dados obtidos
 		total_score = sum([scores[k] for k in scores])
-		avg_score = total_score / len(scores)
-		# Categorias com maior probabilidade de estar correto
-		auto_categories = [category for category in scores if scores[category] >= (avg_score + (avg_score/len(scores)))]
-		# Categorias com mais de 50% (e menos de 75%) de probabilidade de estar correto
-		suggestion_categories = [category for category in scores if scores[category] > avg_score and scores[category] < (avg_score + (avg_score/2))]
+		auto_categories = []
+		suggestion_categories = []
+		if len(scores) > 0 and total_score > 0:
+			avg_score = total_score / len(scores)
+			# Categorias com maior probabilidade de estar correto
+			auto_categories = [category for category in scores if scores[category] >= (avg_score + (avg_score/len(scores)))]
+			# Categorias com mais de 50% (e menos de 75%) de probabilidade de estar correto
+			suggestion_categories = [category for category in scores if scores[category] > avg_score and scores[category] < (avg_score + (avg_score/2))]
 
 		if len(auto_categories) == 0 and len(suggestion_categories) == 0:
 			# Notificar a equipe que esse item não se enquadra em nenhuma categoria
-			logging.warning("O item %s não se enquadra em nenhuma categoria" % key)
-			for name, email in getTeamEmails(team):
+			logging.info(u"O item %s não se enquadra em nenhuma categoria" % key)
+			item.failure = u"O item não se enquadra em nenhuma categoria"
+			item.put()
+			"""for name, email in getTeamEmails(team):
 				taskparams = {
 					'sender': 'category.%s' % key,
 					'to':'%s <%s>' % (name,email),
@@ -130,37 +139,36 @@ class CategorizeWorker(webapp.RequestHandler):
 					'body':getTemplate('lost_item_pure',{'item':item}),
 					'html':getTemplate('lost_item',{'item':item})
 				}
-				taskqueue.add(queue_name='mail',params=taskparams)
+				taskqueue.add(queue_name='mail',params=taskparams)"""
 			return
 
 		if len(auto_categories) > 0:
 			# Enfileirar os e-mails para os contatos da categoria definida automaticamente
 			item.classified = True
 			item.put()
-			logging.info(item)
 			for category in auto_categories:
-				c = Category.get_by_key_name(category)
+				c = Category.get_by_key_name(category,parent=team)
 				ic = ItemInCategory(item=item,category=c,is_suggestion=False)
 				ic.put()
-				for contact in c.contacts.filter("send_automatic =",True):
+				"""for contact in c.contacts.filter("send_automatic =",True):
 					taskparams = {
 						'sender': 'comment.%s' % key,
 						'to':"%s <%s>" % (contact.name,contact.email),
-						'subject':u'Nova notícia: %s' % item.title,
+						'subject':u'[%s] Nova notícia: %s' % (c.name,item.title),
 						'body':getTemplate('new_item_pure',{'item':item}),
 						'html':getTemplate('new_item',{'item':item})
 					}
-					taskqueue.add(queue_name='mail',params=taskparams)
+					taskqueue.add(queue_name='mail',params=taskparams)"""
 
 		if len(suggestion_categories) > 0:
 			# Notificar a equipe sobre as sugestões de categorias e solicitar confirmação
-			suggestions = []
+			#suggestions = []
 			for category in suggestion_categories:
-				c = Category.get_by_key_name(category)
-				suggestions.append(c)
+				c = Category.get_by_key_name(category,parent=team)
+				#suggestions.append(c)
 				ic = ItemInCategory(item=item,category=c,is_suggestion=True)
 				ic.put()
-			for name, email in getTeamEmails(team):
+			"""for name, email in getTeamEmails(team):
 				taskparams = {
 					'sender': 'suggestion.%s' % key,
 					'to':'%s <%s>' % (name,email),
@@ -168,7 +176,7 @@ class CategorizeWorker(webapp.RequestHandler):
 					'body':getTemplate('suggestion_pure',{'item':item,'suggestions':suggestions}),
 					'html':getTemplate('suggestion',{'item':item,'suggestions':suggestions})
 				}
-				taskqueue.add(queue_name='mail',params=taskparams)
+				taskqueue.add(queue_name='mail',params=taskparams)"""
 
 def main():
 	run_wsgi_app(webapp.WSGIApplication([

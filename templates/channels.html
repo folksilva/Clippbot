@@ -26,9 +26,9 @@
 		</div>
 		<div>
 			Atualizar a cada {{ channel.frequence }} minutos. 
-			<span title="Esse canal será sincronizado automáticamente em breve">Sincronização agendada para {{ channel.next_sync|date:"d/m/Y H:i:s" }}.</span>
+			<span title="Esse canal será sincronizado automáticamente em breve">Sincronização agendada para {{ channel.next_sync|date:"H:i:s" }} (em {{ channel.next_sync|timeuntil }}).</span>
 			{% if channel.last_sync %}
-			Sincronizado em {{ channel.last_sync|date:"d/m/Y H:i:s" }}.
+			Sincronizado em {{ channel.last_sync|date:"H:i:s" }} (à {{ channel.last_sync|timesince }}).
 			{% endif %}
 		</div>
 		<div>

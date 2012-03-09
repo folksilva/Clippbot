@@ -14,7 +14,7 @@ from google.appengine.ext.webapp.mail_handlers import InboundMailHandler
 class EmailHandler(InboundMailHandler):
 	def receive(self, message):
 		# Esse e-mail é sobre qual item?
-		item_key = message.to[9:][:-25]
+		item_key = re.search('category\..*@',message.to).group()[9:][:-1]
 		item = Item.get(item_key)
 		logging.info(item.title)
 		if not item or not isinstance(item,Item):
@@ -23,7 +23,9 @@ class EmailHandler(InboundMailHandler):
 			return
 
 		# Quem enviou a mensagem?
-		sender_email = message.sender
+		sender_email = message.sender.strip()
+		if "<" in sender_email and ">" in sender_email:
+			sender_email = re.search('<.*@.*>',sender_email).group()[1:][:-1]
 		sender = None
 
 		# É um contato de uma categoria desse item?
@@ -32,9 +34,10 @@ class EmailHandler(InboundMailHandler):
 			if sender:
 				break
 		# Se não é um contato, é um membro da equipe?
-		for member in item.categories.get().category.team.members:
-			if member.profile.email == sender_email:
-				sender = member
+		if sender == None:
+			for member in item.source_channel.team.members:
+				if member.profile.email == sender_email:
+					sender = member
 
 		if sender == None:
 			# Se não é conhecido ignore o e-mail
@@ -63,21 +66,22 @@ class EmailHandler(InboundMailHandler):
 					ic.is_suggestion = False
 				else:
 					continue
+				ic.is_new = True
 				ic.put()
 				logging.info(u"categoria %s adicionada ao item %s por %s" % (category.name,item.key().name(),sender_email))
-				for contact in category.contacts.filter("send_automatic =",True):
+				"""for contact in category.contacts.filter("send_automatic =",True):
 					taskparams = {
 						'sender': 'comment.%s' % item.key(),
 						'to':"%s <%s>" % (contact.name,contact.email),
-						'subject':u'Nova notícia: %s' % item.title,
+						'subject':u'[%s] Nova notícia: %s' % (category.name,item.title),
 						'body':getTemplate('new_item_pure',{'item':item}),
 						'html':getTemplate('new_item',{'item':item})
 					}
-					taskqueue.add(queue_name='mail',params=taskparams)
+					taskqueue.add(queue_name='mail',params=taskparams)"""
 			break
 
 def main():
-	run_wsgi_app(webapp.WSGIApplication([EmailHandler.mapping()],debug=True))
+	run_wsgi_app(webapp.WSGIApplication([EmailHandler.mapping()]))
 
 if __name__ == "__main__":
 	main()

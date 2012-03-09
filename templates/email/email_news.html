@@ -1,0 +1,22 @@
+{% extends './base_email.html' %}
+
+{% block content %}
+<h1>Novas notícias</h1>
+<p>Olá {{ contact.name }},</p>
+<p>As notícias abaixo foram capturadas pelo Clippbot e colocadas na categoria {{ category.name }}. Você é um dos contatos relacionados a essa categoria, se acredita ter recebido essa mensagem por engano envie um e-mail para <a href='mailto:block.{{ contact.key }}@clippbot.appspotmail.com'>block.{{ contact.key }}@clippbot.appspotmail.com</a> com uma explicação, os próximos e-mails serão bloqueados.</p>
+<p>Você pode clicar no título da notícia para vê-la no Clippbot, ou usar um dos links logo abaixo de cada uma.<br>Clique em <i>Enviar comentário</i> para escrever um e-mail com as suas observações sobre a notícia.</p>
+<p></p>
+{% for item in items %}
+<div style="margin-top:15px;">
+	<a href="http://clippbot.appspot.com/{{ item.key.name }}"><h3>{{ item.title }}</h3></a>
+	<div>{{ item.description }}</div>
+	<div>
+		<a href="{{ item.link }}">Ler notícia completa</a> | 
+		<a href="mailto:comment.{{ item.key }}@clippbot.appspotmail.com">Enviar comentário</a>
+	</div>
+</div>
+{% endfor %}
+{% endblock %}
+
+{% block footer %}
+{% endblock %}

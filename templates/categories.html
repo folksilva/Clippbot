@@ -15,7 +15,10 @@
 			<div>
 				Esta categoria possui {{ category.items.count }} ite{{ category.items.count|pluralize:'m,ns' }}
 			</div>
-			<div><a href="?edit={{ category.key.name }}">Editar</a> | <a href="?delete={{ category.key.name }}" onclick="return confirm('Tem certeza que deseja remover essa categoria?');">Excluir</a>
+			<div>
+				<a href="?edit={{ category.key.name }}">Editar</a> | 
+				<a href="/team/{{ team.key.name }}/categories/{{ category.key.name }}/items">Ver os itens</a> | 
+				<a href="?delete={{ category.key.name }}" onclick="return confirm('Tem certeza que deseja remover essa categoria?');">Excluir</a>
 			</div>
 		</div>
 		{% empty %}
