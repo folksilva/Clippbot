@@ -39,12 +39,10 @@ img {
 	max-width: 100%;
 }
 
-input:not([type="button"]), 
-input:not([type="checkbox"]), 
-input:not([type="hidden"]), 
-input:not([type="image"]), 
-input:not([type="radio"]), 
-input:not([type="reset"]), 
+input[type="text"],
+input[type="password"],
+input[type="file"],
+input[type="search"],
 textarea {
 	font: 14px/1.5 'Helvetica Neue', Arial, 'Liberation Sans', FreeSans, sans-serif;
 	color: #333333;
@@ -61,12 +59,10 @@ textarea {
 	-webkit-transition-duration:1s;
 }
 
-input:not([type="button"]):focus, 
-input:not([type="checkbox"]):focus, 
-input:not([type="hidden"]):focus, 
-input:not([type="image"]):focus, 
-input:not([type="radio"]):focus, 
-input:not([type="reset"]):focus, 
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="file"]:focus,
+input[type="search"]:focus,
 textarea:focus {
 	color: #000000;
 	background-color: #FFFFFF;
@@ -148,6 +144,11 @@ th {background-color: #BBBBBB;}
 .no-important { color: #666666;font-size:11px; }
 .wide input {
 	width: 100%;
+}
+.highlight {
+	color: #D47500;
+	font-weight: bold;
+	text-decoration: underline;
 }
 .logo {
 	max-width: 100%;

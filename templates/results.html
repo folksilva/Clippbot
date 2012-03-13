@@ -2,34 +2,40 @@
 
 {% block content %}
 <div class="grid_12">
-	<h1>Resultados da pesquisa para <i>&ldquo;{{query}}&rdquo;</i></h1>
+	{% if query %}
+	<h1>Pesquisar no Clippbot</h1>
+	<div>{{ results.count }} resultados para <i>{{query}}</i></div>
 	<div class="result-list">
-	{% for item in results.object_list %}
-	<div class="list-item">
-		<div>
-		<a class="list-item-title" href='/{{item.key }}'>{{ item.title }}</a> ({{ item.date|date:"d/m/Y H:i:s" }})
-		<div class="no-important">{{ item.link }}</div>
+	{% for i in results.object_list %}
+		{% with i.item as item %}
+		<div class="list-item">
+			<div>
+			<a class="list-item-title" href='/{{item.key.name }}' id="item-title">{{ item.title }}</a> (à <span title="{{ item.date|date:"d/m/Y H:i" }}"> {{ item.date|timesince }}</span>) <span style="color:#EEEEEE">{{ i.points }} ponto{{ i.points|pluralize }} na busca</span>
+			<div class="no-important" id="item-link">{{ item.link }}</div>
+			</div>
+			<div id="item-description">
+				{{ item.description }}
+			</div>
+			<div>
+				{% if item.categories.count > 0 %}
+					{% for tag in item.categories %}
+					<a href="/team/{{ team.key.name }}/categories/{{ tag.category.key }}"><div class="category-tag">
+						<div class="tag-color" style="border-color:#{{ tag.category.color }};">
+							<span>{{ tag.category.name }}</span>
+						</div>
+					</div></a>
+					{% endfor %}
+				{% else %}
+					<a href="/team/{{ team.key.name }}"><div class="category-tag">
+						<div class="tag-color">
+							<span>Sem categoria</span>
+						</div>
+					</div></a>
+				{% endif %}
+				<a href="{{ item.link }}">Ver na Web</a>
+			</div>
 		</div>
-		<div>
-			{{ item.description }}
-		</div>
-		<div>
-			{% if item.categories.count > 0 %}
-				{% for tag in item.categories %}
-				<a href="/team/{{ team.key.name }}/categories/{{ tag.category.key }}"><div class="category-tag"></a>
-					<div class="tag-color" style="background-color:#{{ tag.category.color }};">&nbsp;</div>
-					<span>{{ tag.category.name }}</span>
-				</div>
-				{% endfor %}
-			{% else %}
-				<a href="/team/{{ team.key.name }}"><div class="category-tag">
-					<div class="tag-color" style="background-color:#A40000;">&nbsp;</div>
-					<span>Sem categoria</span>
-				</div></a>
-			{% endif %}
-			<a href="{{ item.link }}">Ver na Web</a>
-		</div>
-	</div>
+		{% endwith %}
 	{% empty %}
 	<div>Nenhum resultado para exibir.</div>
 	{% endfor %}
@@ -39,4 +45,19 @@
 	{% include 'pagination.html' %}
 	{% endwith %}
 </div>
+<script type="text/javascript">
+	$("#item-title, #item-link, #item-description").highlight("{{ query }}");
+	$("#item-title, #item-link, #item-description").highlight("{{ query.lower }}");
+{% for q in queries %}
+	$("#item-title, #item-link, #item-description").highlight("{{ q }}");
+{% endfor %}
+</script>
+	{% else %}
+	<h1>Pesquisar no Clippbot</h1>
+	<div class="search-box">
+		<input type="search" name="q" value="{{ query }}" placeholder="Buscar notícias">
+		<button type="submit" class="search_submit"><img src="/res/img/search.png"/></button>
+	</div>
+</div>
+	{% endif %}
 {% endblock %}

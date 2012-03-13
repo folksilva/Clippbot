@@ -7,7 +7,8 @@
 		<meta name="keywords" content="clipping,notícias,robo" />
 		<meta name="author" content="Luiz Fernando da Silva <folksilva@gmail.com>" />
 		<meta name="viewport" content="width=device-width, user-scalable=no" />
-		
+		<meta name="wot-verification" content="4aefb382789d671302bc" />
+				
 		<title>{% block title %}{% if title %}{{ title }} - {% endif %}Clippbot{% endblock %}</title>
 
 		<!-- Estilos do site -->
@@ -35,6 +36,7 @@
 		<script type="text/javascript" src="/res/js/adapt.min.js"></script>
 		<script type="text/javascript" src="/res/js/jquery.js"></script>
 		<script type="text/javascript" src="/res/js/colorpicker.js"></script>
+		<script type="text/javascript" src="/res/js/jquery.highlight.js"></script>
 	</head>
 	<body>
 		<section class="container_12">
@@ -46,14 +48,14 @@
 				</div>
 				<form action="/search" method="get">
 				<div class="grid_4 omega">
-					{% comment %}
+					{% comment %}{% endcomment %}
 					{% if user %}
 					<div class="search-box">
 						<input type="search" name="q" value="{{ query }}" placeholder="Buscar notícias">
 						<button type="submit" class="search_submit"><img src="/res/img/search.png"/></button>
 					</div>
 					{% endif %}
-					{% endcomment %}
+					
 				</div>
 				</form>
 			</div>

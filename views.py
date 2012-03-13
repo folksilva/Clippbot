@@ -664,16 +664,136 @@ def issue(request):
 	user = users.GetCurrentUser()
 	return respond(request,user,"issue",{'title':'Questões'})
 
-# Não implementado ainda
-def search(request):
+def search(request,query=None):
 	"""Exibir os resultados de uma pesquisa"""
 	user = users.GetCurrentUser()
 	profile = getProfile(user,request)
 	if not isinstance(profile,Profile):return profile;
-	query = request.GET.get('q')
-	results_list = db.GqlQuery("SELECT * FROM Item WHERE title = :1 ORDER BY date",query)
+	
+	if not query:
+		query = request.GET.get('q')
+		if not query:
+			return respond(request,user,'results')
+		return Redirect("/search/%s" % "+".join(query.split()))
 
-	paginator = Paginator(results_list,20)
+	results_list = []
+	queries = [query]
+	if "+" in query:
+		queries = query.split("+")
+
+	for member in profile.teams:
+		for item in member.team.items:
+			reverse_points = 0
+			if len(queries) > 1:
+				# Contém exatamente igual
+				query = " ".join(queries)
+				if query in item.title:
+					if item.title.startswith(query):
+						reverse_points -= 50
+					elif not item.title.startswith(query) and not item.title.endswith(query):
+						reverse_points -= 49
+					else:
+						reverse_points -= 48
+					reverse_points *= item.title.count(query)
+				
+				if query in item.description:
+					if item.description.startswith(query):
+						reverse_points -= 46
+					elif not item.description.startswith(query) and not item.description.endswith(query):
+						reverse_points -= 45
+					else:
+						reverse_points -= 44
+					reverse_points *= item.description.count(query)
+
+				if query in item.link:
+					link = item.link
+					if link.startswith("http://"):
+						link = link[7:]
+					elif link.startswith("https://"):
+						link = link[8:]
+					link_parts = link.split("/")
+					if query in link_parts[0]:
+						reverse_points -= 43
+					elif query in link_parts[1]:
+						reverse_points -= 42
+					else:
+						reverse_points -= 41
+					reverse_points *= item.link.count(query)
+
+				# Contém em minusculo
+				query = query.lower()
+				if query in item.title.lower():
+					if item.title.lower().startswith(query):
+						reverse_points -= 20
+					elif not item.title.lower().startswith(query) and not item.title.lower().endswith(query):
+						reverse_points -= 19
+					else:
+						reverse_points -= 18
+					reverse_points *= item.title.lower().count(query)
+				
+				if query in item.description.lower():
+					if item.description.lower().startswith(query):
+						reverse_points -= 16
+					elif not item.description.lower().startswith(query) and not item.description.lower().endswith(query):
+						reverse_points -= 15
+					else:
+						reverse_points -= 14
+					reverse_points *= item.description.lower().count(query)
+
+				if query in item.link.lower():
+					link = item.link.lower()
+					if link.startswith("http://"):
+						link = link[7:]
+					elif link.startswith("https://"):
+						link = link[8:]
+					link_parts = link.split("/")
+					if query in link_parts[0]:
+						reverse_points -= 13
+					elif query in link_parts[1]:
+						reverse_points -= 12
+					else:
+						reverse_points -= 11
+					reverse_points *= item.link.lower().count(query)
+
+			for q in queries:
+				query = q.lower()
+				if query in item.title.lower():
+					if item.title.lower().startswith(query):
+						reverse_points -= 10
+					elif not item.title.lower().startswith(query) and not item.title.lower().endswith(query):
+						reverse_points -= 9
+					else:
+						reverse_points -= 8
+					reverse_points *= item.title.lower().count(query)
+				
+				if query in item.description.lower():
+					if item.description.lower().startswith(query):
+						reverse_points -= 6
+					elif not item.description.lower().startswith(query) and not item.description.lower().endswith(query):
+						reverse_points -= 5
+					else:
+						reverse_points -= 4
+					reverse_points *= item.description.lower().count(query)
+
+				if query in item.link.lower():
+					link = item.link.lower()
+					if link.startswith("http://"):
+						link = link[7:]
+					elif link.startswith("https://"):
+						link = link[8:]
+					link_parts = link.split("/")
+					if query in link_parts[0]:
+						reverse_points -= 3
+					elif query in link_parts[1]:
+						reverse_points -= 2
+					else:
+						reverse_points -= 1
+					reverse_points *= item.link.lower().count(query)
+
+			if reverse_points < 0:
+				results_list.append({'points':reverse_points*-1,'order':reverse_points,'item':item})
+
+	paginator = Paginator(sorted(results_list, key=lambda points: points['order']),20)
 	try: 
 		page = int(request.GET.get('page','1')) 
 	except ValueError: 
@@ -683,4 +803,4 @@ def search(request):
 	except (EmptyPage,InvalidPage): 
 		results = paginator.page(paginator.num_pages)
 
-	return respond(request,user,'results',{'query':query,'results':results})	
+	return respond(request,user,'results',{'queries':queries,'query':" ".join(queries),'results':results})
