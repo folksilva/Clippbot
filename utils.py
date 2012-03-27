@@ -37,8 +37,8 @@ def remove_acents(text):
 	text = re.sub('[ÁÀÃÂÄ]','A',text)
 	text = re.sub('[éèẽêë]','e',text)
 	text = re.sub('[ÉÈẼÊË]','E',text)
-	text = re.sub('[íìĩîï]','i',text)
-	text = re.sub('[ÍÌĨÎÏ]','I',text)
+	text = re.sub('[íìĩîïí]','i',text)
+	text = re.sub('[ÍÌĨÎÏÍ]','I',text)
 	text = re.sub('[óòõôö]','o',text)
 	text = re.sub('[ÓÒÕÔÖ]','O',text)
 	text = re.sub('[úùũûü]','u',text)
@@ -92,7 +92,7 @@ def getTeamEmails(team):
 	return emails
 
 def getTeamAdminEmails(team):
-	emails = {}
+	emails = []
 	for member in team.members.filter('is_admin =',True):
 		emails.append((member.profile.name, member.profile.email))
 	return emails

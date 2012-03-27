@@ -110,7 +110,7 @@ class Item(db.Model):
 	# Link da notícia
 	link = db.LinkProperty(required=True)
 	# Descrição da notícia
-	description = db.TextProperty(required=True)
+	description = db.TextProperty(default="")
 	# Autor da notícia
 	author = db.StringProperty()
 	# Data de publicação da notícia
@@ -118,7 +118,7 @@ class Item(db.Model):
 	# URL de item anexado
 	enclosure = db.LinkProperty()
 	# Canal origem da notícia
-	source_channel = db.ReferenceProperty(reference_class=Channel,required=True,collection_name="items")
+	source_channel = db.ReferenceProperty(reference_class=Channel,collection_name="items")
 	# O item está arquivado?
 	is_archived = db.BooleanProperty(default=False,required=True)
 	# O item foi classificado?
@@ -129,6 +129,8 @@ class Item(db.Model):
 	is_new = db.BooleanProperty(default=True,required=True)
 	# O item falhou na categorização
 	failure = db.StringProperty()
+	# O item foi criado externamente
+	is_external = db.BooleanProperty(default=False,required=True)
 
 class ItemInCategory(db.Model):
 	"""
@@ -165,14 +167,14 @@ class Contact(db.Model):
 	updated = db.DateTimeProperty(auto_now=True)
 
 class ItemObservation(db.Model):
-    """Observação do item"""
-    # Item que recebeu a observação
-    item = db.ReferenceProperty(reference_class=Item,required=True,collection_name="observations")
-    # Contato que criou a observação
-    contact = db.ReferenceProperty(reference_class=Contact,collection_name="observations")
-    # Membro que criou a observação
-    member = db.ReferenceProperty(reference_class=Membership,collection_name="observations")
-    # Conteúdo da observação
-    content = db.TextProperty(required=True)
-    # Data da observação
-    date = db.DateTimeProperty(auto_now_add=True)
+	"""Observação do item"""
+	# Item que recebeu a observação
+	item = db.ReferenceProperty(reference_class=Item,required=True,collection_name="observations")
+	# Contato que criou a observação
+	contact = db.ReferenceProperty(reference_class=Contact,collection_name="observations")
+	# Membro que criou a observação
+	member = db.ReferenceProperty(reference_class=Membership,collection_name="observations")
+	# Conteúdo da observação
+	content = db.TextProperty(required=True)
+	# Data da observação
+	date = db.DateTimeProperty(auto_now_add=True)

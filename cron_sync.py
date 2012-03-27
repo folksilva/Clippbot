@@ -1,6 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import logging
+import os, logging
+# Must set this env var *before* importing any part of Django.
+os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
+
+# Make sure we can import Django.  We may end up needing to do this
+# little dance, courtesy of Google third-party versioning hacks.  Note
+# that this patches up sys.modules, so all other code can just use
+# "from django import forms" etc.
+from google.appengine.dist import use_library
+use_library('django','1.2')
+
 from models import *
 from utils import *
 from google.appengine.api.labs import taskqueue

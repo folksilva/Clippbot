@@ -10,9 +10,7 @@ from dateutil import parser
 from google.appengine.api import users
 
 from google.appengine.ext import db
-from google.appengine.ext.db import djangoforms
 
-from google.appengine.api import xmpp
 from google.appengine.api.labs import taskqueue
 
 import django
@@ -91,12 +89,12 @@ def index(request):
 						im_user, im_protocol = im_address.split('@')
 						im_protocol = 'http://%s' % im_protocol
 						profile.im = '%s %s' % (im_protocol,im_user)
-					profile.put()
+						profile.put()
 					taskparams = {
 						'to':'%s <%s>' % (profile.name,profile.email),
 						'subject':'Bem vindo!',
-						'body':getTemplate('welcome_pure',{'name':profile.name}),
-						'html':getTemplate('welcome',{'name':profile.name})
+						'body':getTemplate('email_welcome_pure',{'name':profile.name}),
+						'html':getTemplate('email_welcome',{'name':profile.name})
 					}
 					taskqueue.add(queue_name='mail',params=taskparams)
 					return Redirect('/teams')
@@ -127,6 +125,20 @@ def index(request):
 			membership = profile.teams.get()
 			return Redirect('/team/%s' % membership.team.key().name())
 	return respond(request,user,'index')
+
+def app(request):
+	"""Nova interface do Clippbot"""
+	user = users.GetCurrentUser()
+	if not user:
+		return Redirect(users.CreateLoginURL(request.path))
+	return respond(request,user,'app')
+
+def console(request):
+	"""Nova interface do Clippbot"""
+	user = users.GetCurrentUser()
+	profile = getProfile(user,request)
+	if not isinstance(profile,Profile):return profile;
+	return respond(request,user,'console')
 
 def teams(request):
 	"""Lista de equipes"""
@@ -410,10 +422,10 @@ def team_categories(request, team_key):
 		edit = request.GET.get('edit')
 		delete = request.GET.get('delete')
 		if edit:
-			category = Category.get_by_key_name(edit)
+			category = Category.get_by_key_name(edit,parent=team)
 			action = "edit"
 		elif delete:
-			delete_category = Category.get_by_key_name(delete)
+			delete_category = Category.get_by_key_name(delete,parent=team)
 			for c in delete_category.contacts:
 				c.delete()
 			delete_category.delete()
@@ -426,8 +438,9 @@ def team_categories(request, team_key):
 			try:
 				name = form.cleaned_data['name']
 				color = form.cleaned_data['color']
-				key_name = "_".join(name.lower().split())
-				category = Category(parent=team,key_name=key_name,name=name,color=color,team=team)
+				if action == "new":
+					key_name = "_".join(remove_stopwords(remove_acents(name)).lower().split())
+					category = Category(parent=team,key_name=key_name,name=name,color=color,team=team)
 				category.put()
 				return Redirect('/team/%s/categories' % team.key().name())
 			except ValueError, err:
@@ -456,7 +469,7 @@ def category(request, team_key, category_key):
 	membership = Membership.all().filter('profile =',profile).filter('team =',team).get()
 	if not membership:
 		return Redirect('/teams')
-	category = Category.get_by_key_name(category_key,parent=team)
+	category = Category.get_by_key_name(remove_acents(category_key),parent=team)
 	if not category:
 		return Redirect('/team/%s/categories' % team.key().name())
 

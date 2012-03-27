@@ -83,8 +83,21 @@ indexes:
 
 - kind: Item
   properties:
+  - name: is_external
+  - name: team
+  - name: date
+    direction: desc
+
+- kind: Item
+  properties:
   - name: is_new
   - name: failure
+
+- kind: Item
+  properties:
+  - name: source_channel
+  - name: date
+    direction: desc
 
 - kind: Item
   properties:

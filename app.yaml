@@ -58,6 +58,9 @@ handlers:
   script: reset.py
   login: admin
 
+- url: /api/.*
+  script: api/__init__.py
+
 - url: .*
   script: main.py
 

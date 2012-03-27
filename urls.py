@@ -74,6 +74,8 @@ urlpatterns = patterns(
 	(r'^help$','views.help'),
 	(r'^help/(?P<topic>[a-zA-Z0-9_.-]+)$','views.help'),
 	(r'^issue$','views.issue'),
+	(r'^app$','views.app'),
+	(r'^console$','views.console'),
 	(r'^(?P<item_key>[\S]+)/edit$','views.item_edit'),
 	(r'^(?P<item_key>[\S]+)$','views.item'),
 )
